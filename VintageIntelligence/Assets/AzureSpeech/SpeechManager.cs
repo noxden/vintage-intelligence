@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using System.Xml;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using OpenAI;
@@ -22,7 +19,7 @@ class SpeechManager : MonoBehaviour
 
     /////////////////// ChatGPT
 
-    private OpenAIApi openai = new OpenAIApi("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");
+    private OpenAIApi openai = new OpenAIApi();
 
     private string _returnText;
     private List<ChatMessage> _messages = new List<ChatMessage>();
