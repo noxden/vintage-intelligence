@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using OpenAI;
 using UnityEngine;
+
 
 class SpeechManager : MonoBehaviour
 {
@@ -19,18 +22,19 @@ class SpeechManager : MonoBehaviour
 
     /////////////////// ChatGPT
 
-    private OpenAIApi openai = new OpenAIApi("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");
+    private OpenAIApi openai = new OpenAIApi("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");
 
-    private string returnText;
-    private List<ChatMessage> messages = new List<ChatMessage>();
-    private string prompt = "Can you please convert the following text into a shakespearean dialect without adding any other response? " +
+    private string _returnText;
+    private List<ChatMessage> _messages = new List<ChatMessage>();
+    private string _prompt = "Can you please convert the following text into a shakespearean dialect without adding any other response? " +
         " ";
 
     public async void Start()
     {
         speechConfig = SpeechConfig.FromSubscription(speechKey, speechRegion);
         speechConfig.SpeechRecognitionLanguage = "en-US";
-        speechConfig.SpeechSynthesisVoiceName = "en-AU-DarrenNeural";
+        speechConfig.SpeechSynthesisVoiceName = "en-US-JaneNeural";
+        speechConfig.SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Riff24Khz16BitMonoPcm);
 
         audioConfig = AudioConfig.FromDefaultMicrophoneInput();
 
@@ -53,21 +57,23 @@ class SpeechManager : MonoBehaviour
                 var returnMessage = completionResponse.Choices[0].Message;
                 returnMessage.Content = returnMessage.Content.Trim();
 
-                returnText = returnMessage.Content.ToString();
-                Debug.Log(returnText);
+                _returnText = returnMessage.Content.ToString();
+                Debug.Log(_returnText);
             }
             else
             {
                 Debug.LogWarning("No text was generated from this prompt.");
-                returnText = "";
+                _returnText = "";
             }
 
-            if (returnText.Length != 0)
+            if (_returnText.Length != 0)
             {
                 using (speechSynthesizer)
                 {
-                    var speechSynthesisResult = await speechSynthesizer.SpeakTextAsync(returnText);
-                    OutputSpeechSynthesisResult(speechSynthesisResult, returnText);
+                    
+                    //var speechSynthesisResult = await speechSynthesizer.SpeakTextAsync(_returnText);
+                    var speechSynthesisResult = await speechSynthesizer.SpeakSsmlAsync(GetStyledVoiceString(_returnText));
+                    OutputSpeechSynthesisResult(speechSynthesisResult, _returnText);
                 }
             }
         }
@@ -131,17 +137,29 @@ class SpeechManager : MonoBehaviour
 
     private List<ChatMessage> GetChatGPTMessage(string message)
     {
+        
         var newMessage = new ChatMessage()
         {
             Role = "user",
-            Content = prompt + message
+            Content = _prompt + message
         };
 
-        messages.Clear();
-        messages.Add(newMessage);
+        _messages.Clear();
+        _messages.Add(newMessage);
 
-        return messages;
+        return _messages;
     }
 
+    private string GetStyledVoiceString(string message)
+    {
+        var ssml = @$"<speak version='1.0' xml:lang='en-US' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='http://www.w3.org/2001/mstts'>
+                        <voice name='en-US-JaneNeural'>
+                            <mstts:express-as style=""whispering"">
+                {message}
+                </mstts:express-as>
+            </voice>
+        </speak>";
+        return ssml;
+    }
     #endregion
 }
