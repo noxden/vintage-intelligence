@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using OpenAI;
 using UnityEngine;
+using File = UnityEngine.Windows.File;
 
 public static class TaskTest
 {
@@ -86,6 +88,7 @@ public static class TaskTest
         {
             case ResultReason.RecognizedSpeech:
                 Debug.Log($"RECOGNIZED: Text={speechRecognitionResult.Text}");
+                
                 return true;
             case ResultReason.NoMatch:
                 Debug.Log($"NOMATCH: Speech could not be recognized.");
@@ -111,6 +114,9 @@ public static class TaskTest
         {
             case ResultReason.SynthesizingAudioCompleted:
                 Debug.Log($"Speech synthesized for text: [{text}]");
+                var AudioData = speechSynthesisResult.AudioData;
+                var filePath = Path.Combine(Application.dataPath, "Resources", "TTSAudio.wav");
+                File.WriteAllBytes(filePath, AudioData);
                 break;
             case ResultReason.Canceled:
                 var cancellation = SpeechSynthesisCancellationDetails.FromResult(speechSynthesisResult);
