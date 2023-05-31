@@ -5,8 +5,8 @@ using UnityEngine;
 public class RunTask : MonoBehaviour
 {
     // Start is called before the first frame update
-    public async void RunTaskPLS()
+    public void RunTaskPLS()
     {
-        await TaskTest.TestingTask();
+        SpeechManager.StartSpeechRecording();
     }
 }
