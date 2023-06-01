@@ -3285,6 +3285,7 @@ GameObject:
   m_Component:
   - component: {fileID: 813579986}
   - component: {fileID: 813579988}
+  - component: {fileID: 813579989}
   m_Layer: 0
   m_Name: PlayerInputs
   m_TagString: Untagged
@@ -3326,6 +3327,18 @@ MonoBehaviour:
   OnFinishedRecording:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &813579989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 813579985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245a4b6b3a977a84e83787e20937825a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &819469230
 GameObject:
   m_ObjectHideFlags: 0

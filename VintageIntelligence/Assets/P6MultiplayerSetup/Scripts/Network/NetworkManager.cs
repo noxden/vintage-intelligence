@@ -11,6 +11,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         ConnectToServer();
+        
     }
 
     // Connect to the Photon server on start using the settings you set in the inspector when setting up the server.
