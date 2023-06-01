@@ -121,6 +121,61 @@ public static class SpeechManager
         }
     }
 
+    private static string _messageToRead = "";
+
+    public static async void StartReadMessage(string message)
+    {
+        _messageToRead = message;
+        await ReadMessageAsync();
+    }
+
+    public static async Task ReadMessageAsync()
+    {
+        //////////// SPEECH TO TEXT //////////////
+        speechConfig = SpeechConfig.FromSubscription(speechKey, speechRegion);
+        speechConfig.SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Riff24Khz16BitMonoPcm);
+
+        using var speechSynthesizer = new SpeechSynthesizer(speechConfig, audioConfig);
+
+        if (_messageToRead.Length <= 0)
+            return;
+
+        //////////// CHAT GPT //////////////
+
+            var completionResponse = await openai.CreateChatCompletion(new CreateChatCompletionRequest()
+            {
+                Model = "gpt-3.5-turbo-0301",
+                Messages = GetChatGPTMessage(_messageToRead)
+            });
+
+            if (completionResponse.Choices != null && completionResponse.Choices.Count > 0)
+            {
+                var returnMessage = completionResponse.Choices[0].Message;
+                returnMessage.Content = returnMessage.Content.Trim();
+
+                _returnText = returnMessage.Content.ToString();
+                Debug.Log(_returnText);
+            }
+            else
+            {
+                Debug.LogWarning("No text was generated from this prompt.");
+                _returnText = "";
+            }
+            //////////// TEXT TO SPEECH //////////////
+            if (_returnText.Length != 0)
+            {
+                OnNewSpokenText?.Invoke(_returnText);
+                using (speechSynthesizer)
+                {
+                    //var speechSynthesisResult = await speechSynthesizer.SpeakTextAsync(_returnText);
+
+                    var speechSynthesisResult = await speechSynthesizer.SpeakSsmlAsync(GetStyledVoiceString(_returnText));
+                    OutputSpeechSynthesisResult(speechSynthesisResult, _returnText);
+                }
+            }
+        
+    }
+
     #region SST and TTS
 
     private static void SpeechRecognized(object sender, SpeechRecognitionEventArgs eventArgs)

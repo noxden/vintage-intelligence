@@ -19,7 +19,7 @@ public class TransferMessage : MonoBehaviourPun
     [PunRPC]
     private void ReceiveString(string receivedString)
     {
-
+        SpeechManager.StartReadMessage(receivedString);
         Debug.Log("Received string: " + receivedString);
     }
 }
