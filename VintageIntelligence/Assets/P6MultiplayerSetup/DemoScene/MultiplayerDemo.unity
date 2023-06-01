@@ -4620,7 +4620,7 @@ GameObject:
   - component: {fileID: 1163274940}
   - component: {fileID: 1163274939}
   m_Layer: 0
-  m_Name: hu
+  m_Name: SpeechTransferObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
