@@ -7,7 +7,7 @@ using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using OpenAI;
 using UnityEngine;
-using File = UnityEngine.Windows.File;
+
 
 public static class TaskTest
 {

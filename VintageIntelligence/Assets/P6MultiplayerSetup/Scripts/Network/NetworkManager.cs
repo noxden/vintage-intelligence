@@ -6,12 +6,13 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
+
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
+
     private void Start()
     {
         ConnectToServer();
-        
     }
 
     // Connect to the Photon server on start using the settings you set in the inspector when setting up the server.
@@ -42,6 +43,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("Joined a room.");
         base.OnJoinedRoom();
+
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -49,4 +51,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Debug.Log("Someone joined a room.");
         base.OnPlayerEnteredRoom(newPlayer);
     }
+
+
 }
