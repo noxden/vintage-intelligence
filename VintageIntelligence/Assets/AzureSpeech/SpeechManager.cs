@@ -86,7 +86,7 @@ public static class SpeechManager
 
         //////////// CHAT GPT //////////////
         if (OutputSpeechRecognitionResult(speechRecognitionResult))
-        {
+        {/*
             var completionResponse = await openai.CreateChatCompletion(new CreateChatCompletionRequest()
             {
                 Model = "gpt-3.5-turbo-0301",
@@ -117,7 +117,7 @@ public static class SpeechManager
                     var speechSynthesisResult = await speechSynthesizer.SpeakSsmlAsync(GetStyledVoiceString(_returnText));
                     OutputSpeechSynthesisResult(speechSynthesisResult, _returnText);
                 }
-            }
+            }*/
         }
     }
 
