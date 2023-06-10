@@ -15,13 +15,13 @@ public class NetworkPlayerSpawner : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         base.OnJoinedRoom();
-
+        /*
         // Check for displays to determine which player this is
-        if (Display.displays.Length > 6)
+        if (Display.displays.Length > 3)
             SetupCavePlayer();
         else
             SetupHMDPlayer();
-
+        */
         // When we join a room, we spawn an Avatar for ourselves(the NetworkPlayer). This will be visible to others then since we instantiate it in the network.
         _spawnedPlayerPrefab = PhotonNetwork.Instantiate("NetworkPlayer", transform.position, transform.rotation);
     }
