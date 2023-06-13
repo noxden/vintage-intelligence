@@ -5,10 +5,12 @@ using UnityEngine;
 
 public class PosessableHighlight : MonoBehaviour
 {
-    [SerializeField] Material _selectMat;
+    [SerializeField] private Material _selectMat;
 
     private Material _baseMat;
     private MeshRenderer _meshRenderer;
+
+    public int IndexOfObject;
 
     private void Awake()
     {

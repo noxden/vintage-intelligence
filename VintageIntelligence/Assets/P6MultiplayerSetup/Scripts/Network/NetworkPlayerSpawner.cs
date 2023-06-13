@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class NetworkPlayerSpawner : MonoBehaviourPunCallbacks
 {
-    public GameObject CavePlayer;
-    public GameObject HMDPlayer;
+    //public GameObject CavePlayer;
+    //public GameObject HMDPlayer;
 
     private GameObject _spawnedPlayerPrefab;
 
@@ -23,7 +23,8 @@ public class NetworkPlayerSpawner : MonoBehaviourPunCallbacks
             SetupHMDPlayer();
         */
         // When we join a room, we spawn an Avatar for ourselves(the NetworkPlayer). This will be visible to others then since we instantiate it in the network.
-        _spawnedPlayerPrefab = PhotonNetwork.Instantiate("NetworkPlayer", transform.position, transform.rotation);
+        if (Display.displays.Length < 3)
+            _spawnedPlayerPrefab = PhotonNetwork.Instantiate("NetworkPlayer", transform.position, transform.rotation);
     }
 
     public override void OnLeftRoom()
@@ -32,6 +33,8 @@ public class NetworkPlayerSpawner : MonoBehaviourPunCallbacks
         // When we leave the room again, we also destroy our avatar on the network
         PhotonNetwork.Destroy(_spawnedPlayerPrefab);
     }
+
+    /*
 
     private void SetupCavePlayer()
     {
@@ -46,4 +49,5 @@ public class NetworkPlayerSpawner : MonoBehaviourPunCallbacks
         Transform hmdOrigin = HMDPlayer.transform.GetChild(0);
         hmdOrigin.parent = null;
     }
+    */
 }
