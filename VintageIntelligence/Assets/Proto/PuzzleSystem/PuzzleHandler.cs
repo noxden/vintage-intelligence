@@ -1,14 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
+// Created 15.06.2023 by Krista Plagemann//
+// Handles the puzzles and collection and events related to each puzzle
+
 using UnityEngine;
 using UnityEngine.Events;
+
+public enum PlayerType { CavePlayer, HMDPlayer }
 
 public class PuzzleHandler : MonoBehaviour
 {
     public static PuzzleHandler Instance { get; private set; }
 
     private void Awake() => Instance = this;
-    
+
+    public PlayerType _ThisPlayer;
+
+    public int HandlesPlaced = 0;
+    public GameObject[] GhostHandlesForCP;
 
     public int BigClockHandlesCorrect = 0;
     public int Clock1HandlesCorrect = 0;
@@ -17,6 +24,30 @@ public class PuzzleHandler : MonoBehaviour
 
     public UnityEvent<int, bool> ClockDone;
     public UnityEvent AllClocksDone;
+    public UnityEvent AllHandlesCollected;
+
+    #region Clocks Puzzle
+
+    public void AddHandleCollected()
+    {
+        HandlesPlaced++;
+        if (HandlesPlaced == 2)
+        {
+            AllHandlesCollected?.Invoke();
+            SetHandleVisibilityForCP(true);
+        }
+    }
+
+    private void SetHandleVisibilityForCP(bool state)
+    {
+        if(_ThisPlayer == PlayerType.CavePlayer)
+        {
+            foreach(GameObject handle in GhostHandlesForCP)
+            {
+                handle.SetActive(state);
+            }
+        }
+    }
 
     public void SetClockState(int clockIndex, bool state)
     {
@@ -74,7 +105,10 @@ public class PuzzleHandler : MonoBehaviour
         if(BigClockHandlesCorrect + Clock1HandlesCorrect + Clock2HandlesCorrect + Clock3HandlesCorrect == 8)
         {
             AllClocksDone.Invoke();
+            SetHandleVisibilityForCP(false);
         }
 
     }
+
+    #endregion
 }
