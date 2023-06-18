@@ -16,10 +16,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using OpenAI;
+using Photon.Voice;
 using UnityEngine;
 
 
@@ -138,9 +140,12 @@ public static class SpeechManager
     public static async Task ReadMessageAsync()
     {
         _speechConfig = SpeechConfig.FromSubscription(AIData.AzureKey, AIData.AzureRegion);
-        _speechConfig.SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Riff24Khz16BitMonoPcm);
+        _speechConfig.SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz128KBitRateMonoMp3);
+        //_audioConfig = AudioConfig.FromWavFileOutput("Assets/Resources/speechOutput.mp3");
+
 
         using var speechSynthesizer = new SpeechSynthesizer(_speechConfig, _audioConfig);
+       
 
         if (_messageToRead.Length <= 0) // makes sure the recognizing before was successful and we have a text
             return;
@@ -178,7 +183,45 @@ public static class SpeechManager
             {
                 // Reads out the text we got from ChatGPT
                 var speechSynthesisResult = await speechSynthesizer.SpeakSsmlAsync(GetStyledVoiceString(_returnText));
-                OutputSpeechSynthesisResult(speechSynthesisResult, _returnText); // literally just Debug.Logs :D
+
+
+                //OutputSpeechSynthesisResult(speechSynthesisResult, _returnText); // literally just Debug.Logs :D
+                //using (var stream = AudioDataStream.FromResult(speechSynthesisResult))
+                //{
+                //    stream.SetPosition(0);
+
+                //    byte[] buffer = new byte[16000];
+                //    uint totalSize = 0;
+                //    uint filledSize = 0;
+
+                //    while ((filledSize = stream.ReadData(buffer)) > 0)
+                //    {
+                //        totalSize += filledSize;
+                //    }
+
+                //    byte[] data = new byte[totalSize];
+
+                //    float[] samples = new float[data.Length / 4]; //size of a float is 4 bytes
+
+                //    for (int i = 0; i < samples.Length; i++)
+                //    {
+                //        samples[i] = (float)BitConverter.ToInt16(data, i * 2) / 32768f;
+                //    }
+
+                //    //Buffer.BlockCopy(buffer, 0, samples, 0, buffer.Length);
+
+                //    int channels = 1; //Assuming audio is mono because microphone input usually is
+                //    int sampleRate = 44100; //Assuming your samplerate is 44100 or change to 48000 or whatever is appropriate
+                
+
+                //AudioClip audioClip = AudioClip.Create("audioClip", samples.Length, channels, sampleRate, false);
+                    //audioClip.SetData(samples, 0);
+                var audioReadout = Resources.Load<AudioClip>("TTSAudio");
+                Debug.Log(audioReadout);
+
+                AudioSource.PlayClipAtPoint(audioReadout, Vector3.zero);
+                //}
+                
             }
         }
     }
@@ -256,6 +299,9 @@ public static class SpeechManager
         switch (speechSynthesisResult.Reason)
         {
             case ResultReason.SynthesizingAudioCompleted:
+                var AudioData = speechSynthesisResult.AudioData;
+                var filePath = Path.Combine(Application.dataPath, "Resources", "TTSAudio.wav");
+                File.WriteAllBytes(filePath, AudioData);
                 Debug.Log($"Speech synthesized for text: [{text}]");
                 break;
             case ResultReason.Canceled:
