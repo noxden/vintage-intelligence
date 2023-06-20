@@ -13,6 +13,7 @@ public class MoveHandle : MonoBehaviour
 {
     [SerializeField] private Transform _grabber;
     [SerializeField] private Transform _pivot;
+    [SerializeField] private PhotonView _photonViewHandle;
     public InputDeviceCharacteristics LeftControllerCharacteristics;
     public InputDeviceCharacteristics RightControllerCharacteristics;
 
@@ -47,6 +48,7 @@ public class MoveHandle : MonoBehaviour
             _grabbingHand = other.transform;
             _isGrabbable = true;
 
+            _photonViewHandle.RequestOwnership();
 
             await UpdateHandlePosition(RightControllerCharacteristics);
         }
