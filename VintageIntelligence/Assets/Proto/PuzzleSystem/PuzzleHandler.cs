@@ -28,6 +28,14 @@ public class PuzzleHandler : MonoBehaviour
 
     #region Clocks Puzzle
 
+    [SerializeField] private GameObject _BrickToPush;
+    [SerializeField] private Transform _ForcePushPoint;
+
+    public void BrickPushedReleasedThis()
+    {
+        _BrickToPush.GetComponent<Rigidbody>().AddForceAtPosition(new Vector3 (0,0,20), _ForcePushPoint.position, ForceMode.Impulse);
+    }
+
     public void AddHandleCollected()
     {
         HandlesPlaced++;
