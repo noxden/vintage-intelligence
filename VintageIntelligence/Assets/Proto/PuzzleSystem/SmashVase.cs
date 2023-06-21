@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 using UnityEngine.XR.Interaction.Toolkit;
 
 public class SmashVase : MonoBehaviour
@@ -19,6 +20,7 @@ public class SmashVase : MonoBehaviour
 
     private void Start()
     {
+        hitpos = transform.position;
         _thisVase = GetComponent<MeshRenderer>();
         _collider = GetComponent<Collider>();
         GetComponent<XRGrabInteractableNetwork>().selectExited.AddListener(Released);
@@ -44,14 +46,18 @@ public class SmashVase : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
+        Debug.Log($"Distance traveled: {Vector3.Distance(transform.position, hitpos)} bigger than {_MinDistance}, Time passed: {distanceTraveledUntilCrash} smaller than {_MaxTimeTraveled}");
         if (Vector3.Distance(transform.position, hitpos) >= _MinDistance)
         {
-            if(distanceTraveledUntilCrash <= _MaxTimeTraveled)
+            if (distanceTraveledUntilCrash <= _MaxTimeTraveled && distanceTraveledUntilCrash > 0)
             {
                 _thisVase.enabled = false;
                 _collider.enabled = false;
                 _SmashedObjects.SetActive(true);
+                _SmashedObjects.GetComponent<PhotonView>().RequestOwnership();
                 _Handle.transform.parent = null;
+                _Handle.GetComponent<PhotonView>().RequestOwnership();
+                _Handle.SetActive(true);
                 _SmashedObjects.transform.parent = null;
                 Invoke("EnableHandle", 1f);
             }
@@ -60,6 +66,8 @@ public class SmashVase : MonoBehaviour
 
     private void EnableHandle()
     {
-        _Handle.SetActive(true);
+        _Handle.GetComponent<Rigidbody>().isKinematic = false;
+        _Handle.GetComponent<Collider>().enabled = true;
+        _Handle.GetComponent<XRGrabInteractableNetwork>().enabled = true;
     }
 }

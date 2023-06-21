@@ -3,10 +3,11 @@
 
 using UnityEngine;
 using UnityEngine.Events;
+using Photon.Pun;
 
 public enum PlayerType { CavePlayer, HMDPlayer }
 
-public class PuzzleHandler : MonoBehaviour
+public class PuzzleHandler : MonoBehaviourPunCallbacks
 {
     public static PuzzleHandler Instance { get; private set; }
 
@@ -41,7 +42,8 @@ public class PuzzleHandler : MonoBehaviour
         HandlesPlaced++;
         if (HandlesPlaced == 2)
         {
-            AllHandlesCollected?.Invoke();
+            AllHandlesCollected?.Invoke();        
+            photonView.RPC("AllHandlesDone", RpcTarget.Others);
             SetHandleVisibilityForCP(true);
         }
     }
@@ -113,10 +115,27 @@ public class PuzzleHandler : MonoBehaviour
         if(BigClockHandlesCorrect + Clock1HandlesCorrect + Clock2HandlesCorrect + Clock3HandlesCorrect == 8)
         {
             AllClocksDone.Invoke();
+            photonView.RPC("AllClocksDoneNetwork", RpcTarget.Others);
             SetHandleVisibilityForCP(false);
         }
 
     }
 
     #endregion
+
+
+
+    [PunRPC]
+    private void AllHandlesDone()
+    {
+        AllHandlesCollected?.Invoke();
+        SetHandleVisibilityForCP(true);
+    }
+
+    [PunRPC]
+    private void AllClocksDoneNetwork()
+    {
+        AllClocksDone.Invoke();
+        SetHandleVisibilityForCP(false);
+    }
 }

@@ -96,7 +96,6 @@ public class MoveHandle : MonoBehaviour
         while (!gripState)
         {
             _thisHand.TryGetFeatureValue(CommonUsages.gripButton, out gripState);
-            Debug.Log(gripState);
             if (!_isGrabbable)
                 break;
             await Task.Yield();
@@ -106,7 +105,6 @@ public class MoveHandle : MonoBehaviour
         {
             _grabbing = true;
 
-            Debug.LogWarning("Start grabbed");
             while (_grabbing)
             {
                 Vector3 handPosition = new Vector3(_pivot.position.x, _grabbingHand.position.y, _grabbingHand.position.z);
