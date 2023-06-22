@@ -16,11 +16,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using OpenAI;
 using UnityEngine;
+using UnityEngine.Windows;
 
 
 public static class SpeechManager
@@ -31,6 +33,7 @@ public static class SpeechManager
     private static AudioConfig _audioConfig;
     private static SpeechRecognitionResult _speechRecognitionResult;
     private static string _speechRecognitionLanguage = "en-US"; // Changes the language azure is trying to recognize
+    private const int SampleRate = 24000;
 
     public static bool FinishedRecording = false;
     public static TaskCompletionSource<int> StopRecognition;
@@ -109,6 +112,7 @@ public static class SpeechManager
 
         OutputSpeechRecognitionResult(_speechRecognitionResult); // Validates the output and fires OnNewRecognizedText with the string received
 
+        //StartReadMessage(_speechRecognitionResult.Text);
         // Finished with firing off the event OnNewRecognizedText. Subscribe to it and save the string somewhere to use it further.
     }
 
@@ -138,9 +142,9 @@ public static class SpeechManager
     public static async Task ReadMessageAsync()
     {
         _speechConfig = SpeechConfig.FromSubscription(AIData.AzureKey, AIData.AzureRegion);
-        _speechConfig.SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Riff24Khz16BitMonoPcm);
+        _speechConfig.SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Raw24Khz16BitMonoPcm);
 
-        using var speechSynthesizer = new SpeechSynthesizer(_speechConfig, _audioConfig);
+        using var speechSynthesizer = new SpeechSynthesizer(_speechConfig, null);
 
         if (_messageToRead.Length <= 0) // makes sure the recognizing before was successful and we have a text
             return;
@@ -176,9 +180,55 @@ public static class SpeechManager
             OnNewSpokenText?.Invoke(_returnText);   // Fires off an event with the converted ChatGPT message
             using (speechSynthesizer)
             {
+                var startTime = DateTime.Now;
+
                 // Reads out the text we got from ChatGPT
-                var speechSynthesisResult = await speechSynthesizer.SpeakSsmlAsync(GetStyledVoiceString(_returnText));
-                OutputSpeechSynthesisResult(speechSynthesisResult, _returnText); // literally just Debug.Logs :D
+                //var speechSynthesisResult = await speechSynthesizer.SpeakSsmlAsync(GetStyledVoiceString(_returnText));
+                using (var result = await speechSynthesizer.SpeakSsmlAsync(GetStyledVoiceString(_returnText)))
+                {
+                    var audioDataStream = AudioDataStream.FromResult(result);
+                    var isFirstAudioChunk = true;
+                    var audioClip = AudioClip.Create(
+                        "Speech",
+                        SampleRate * 600, // Can speak 10mins audio as maximum
+                        1,
+                        SampleRate,
+                        true,
+                        (float[] audioChunk) =>
+                        {
+                            var chunkSize = audioChunk.Length;
+                            var audioChunkBytes = new byte[chunkSize * 2];
+                            var readBytes = audioDataStream.ReadData(audioChunkBytes);
+                            if (isFirstAudioChunk && readBytes > 0)
+                            {
+                                var endTime = DateTime.Now;
+                                var latency = endTime.Subtract(startTime).TotalMilliseconds;
+                                isFirstAudioChunk = false;
+                            }
+
+                            for (int i = 0; i < chunkSize; ++i)
+                            {
+                                if (i < readBytes / 2)
+                                {
+                                    audioChunk[i] = (short)(audioChunkBytes[i * 2 + 1] << 8 | audioChunkBytes[i * 2]) / 32768.0F;
+                                }
+                                else
+                                {
+                                    audioChunk[i] = 0.0f;
+                                }
+                            }
+
+                            if (readBytes == 0)
+                            {
+                                //Task.Delay(200).Wait();
+                                //Thread.Sleep(200); // Leave some time for the audioSource to finish playback
+                                //AudioSourceNeedStop = true;
+                            }
+                        });
+                    AudioSource.PlayClipAtPoint(audioClip, Vector3.zero);
+                    await speechSynthesizer.StopSpeakingAsync();
+                }
+                //OutputSpeechSynthesisResult(speechSynthesisResult, _returnText); // literally just Debug.Logs :D
             }
         }
     }

@@ -41,6 +41,8 @@ MonoBehaviour:
   - HeresWhy
   - ReceiveString
   - SetPossessingObject
+  - AllHandlesDone
+  - AllClocksDoneNetwork
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
