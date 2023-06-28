@@ -26,6 +26,7 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
     public UnityEvent<int, bool> ClockDone;
     public UnityEvent AllClocksDone;
     public UnityEvent AllHandlesCollected;
+    public UnityEvent SeedPlanted;
 
     #region Clocks Puzzle
 
@@ -124,6 +125,19 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
     #endregion
 
 
+    #region Plant
+
+
+    public void PlantSeed()
+    {
+        SeedPlanted?.Invoke();
+        photonView.RPC("SeedPlantedNetwork", RpcTarget.Others);   
+    }
+
+
+    #endregion
+
+
 
     [PunRPC]
     private void AllHandlesDone()
@@ -137,5 +151,11 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
     {
         AllClocksDone.Invoke();
         SetHandleVisibilityForCP(false);
+    }
+
+    [PunRPC]
+    private void SeedPlantedNetwork()
+    {
+        SeedPlanted?.Invoke();
     }
 }
