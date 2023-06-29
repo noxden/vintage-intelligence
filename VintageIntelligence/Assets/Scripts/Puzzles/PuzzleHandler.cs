@@ -27,6 +27,7 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
     public UnityEvent AllClocksDone;
     public UnityEvent AllHandlesCollected;
     public UnityEvent SeedPlanted;
+    public UnityEvent OnSeedWatered;
 
     #region Clocks Puzzle
 
@@ -127,17 +128,31 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
 
     #region Plant
 
+    private bool _seedIsPlanted = false;
+    private bool _seedIsWatered = false;
 
+    // When the plant is dropped in the planting zone
     public void PlantSeed()
     {
         SeedPlanted?.Invoke();
+        _seedIsPlanted = true;
         photonView.RPC("SeedPlantedNetwork", RpcTarget.Others);   
+    }
+
+    // When the water stream successfully hits the watering zone.
+    public void SeedWatered()
+    {
+        if (_seedIsWatered || !_seedIsPlanted)
+            return;
+        _seedIsWatered = true;
+        OnSeedWatered?.Invoke();
+        photonView.RPC("SeedWateredNetwork", RpcTarget.Others);
     }
 
 
     #endregion
 
-
+    // Notifies the network player(cave player) when a puzzle is done so the visual effects also take place for them
 
     [PunRPC]
     private void AllHandlesDone()
@@ -158,4 +173,11 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
     {
         SeedPlanted?.Invoke();
     }
+    
+    [PunRPC]
+    private void SeedWateredNetwork()
+    {
+        OnSeedWatered?.Invoke();
+    }
+
 }

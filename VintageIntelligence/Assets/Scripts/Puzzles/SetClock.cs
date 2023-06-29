@@ -1,3 +1,5 @@
+// Created by Krista Plagemann//
+// Checks for the handles entering to collider to signal that we set the time correctly. //
 
 using UnityEngine;
 
