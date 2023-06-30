@@ -1,28 +1,27 @@
+// Created by Krista Plagemann//
+// Simulates that the handles are grabbable (via this script instead of XRGrabInteractable bcs it just wasn't working well). //
+// Calculates rotation of the handle following the hand movement in clock-like rotations (it's not actually grabbable lol). //
 
 using Photon.Pun;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR;
 
 public class MoveHandle : MonoBehaviour
 {
-    [SerializeField] private Transform _grabber;
-    [SerializeField] private Transform _pivot;
-    [SerializeField] private PhotonView _photonViewHandle;
+    [SerializeField] private Transform _grabber;    // Position of the grabbable sphere
+    [SerializeField] private Transform _pivot;      // pivot in the center of the clock to get the axis of rotation
+    [SerializeField] private PhotonView _photonViewHandle;  // just to get ownership over the transform
+
     public InputDeviceCharacteristics LeftControllerCharacteristics;
     public InputDeviceCharacteristics RightControllerCharacteristics;
-
-    private bool _isGrabbable = false;
-    private bool _grabbing = false;
-
-    private Transform _grabbingHand;
     private InputDevice _leftHand;
     private InputDevice _rightHand;
+
+    private bool _isGrabbable = false;  // if the hand is inside the grab zone
+    private bool _grabbing = false;     // and if we are pressing the grab button
+    private Transform _grabbingHand;    // Hand that is grabbing the handle sphere
 
 
     // Enable grabbing if a hand enters the trigger collider
@@ -107,17 +106,19 @@ public class MoveHandle : MonoBehaviour
 
             while (_grabbing)
             {
+                // Calculates the angle between where the handle points right now (grabber position) and the hand position.
+                // Then we rotate to make the handle rotation(this rotation) the same as the hand position so it follows the hands(we are faking the grabbing lol)
                 Vector3 handPosition = new Vector3(_pivot.position.x, _grabbingHand.position.y, _grabbingHand.position.z);
                 Vector3 grabberPosition = new Vector3(_pivot.position.x, _grabber.position.y, _grabber.position.z);
-                //float angleTowards = Vector3.Angle(handPosition - _pivot.position, _grabber.transform.position - _pivot.position);
-                float angleTowards = SignedAngleBetween(handPosition - _pivot.position, grabberPosition - _pivot.position, _pivot.right);
-                //float angleTowards = Vector3.Angle(Vector3.Normalize(handPosition - _pivot.position), _grabber.transform.position - _pivot.position);
+
+                float angleTowards = SignedAngleBetween(handPosition - _pivot.position, grabberPosition - _pivot.position, _pivot.right, false);
+
 
                 Debug.DrawRay(_pivot.position, grabberPosition - _pivot.position, Color.red);
                 Debug.DrawRay(_pivot.position, handPosition - _pivot.position, Color.blue);
                 transform.RotateAround(_pivot.position, Vector3.right, angleTowards);
-                //yield return new WaitForSeconds(1);
-                _thisHand.TryGetFeatureValue(CommonUsages.gripButton, out gripState);
+
+                _thisHand.TryGetFeatureValue(CommonUsages.gripButton, out gripState);   // always check if we are still grabbing
 
                 if (!gripState)
                 {
@@ -129,7 +130,7 @@ public class MoveHandle : MonoBehaviour
         }
     }
 
-    float SignedAngleBetween(Vector3 a, Vector3 b, Vector3 n)
+    public static float SignedAngleBetween(Vector3 a, Vector3 b, Vector3 n, bool fullAngle)
     {
         // angle in [0,180]
         float angle = Vector3.Angle(a, b);
@@ -138,8 +139,9 @@ public class MoveHandle : MonoBehaviour
         // angle in [-179,180]
         float signed_angle = angle * sign;
 
-        // angle in [0,360] (not used but included here for completeness)
-        //float angle360 =  (signed_angle + 180) % 360;
+        // angle in [0,360] (use bool to use :))
+        if(fullAngle)
+            signed_angle =  (signed_angle + 180) % 360;
 
         return signed_angle;
     }
