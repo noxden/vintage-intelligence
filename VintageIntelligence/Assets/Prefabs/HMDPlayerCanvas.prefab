@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1328165201245032578}
   - component: {fileID: 3175166543941944841}
   m_Layer: 5
-  m_Name: CavePlayerCanvas
+  m_Name: HMDPlayerCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -219,7 +219,7 @@ GameObject:
   - component: {fileID: 6368449394241896110}
   - component: {fileID: 1389701233911808942}
   m_Layer: 5
-  m_Name: Press Trigger
+  m_Name: Press Grip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -240,9 +240,9 @@ RectTransform:
   m_Father: {fileID: 5289897882393022525}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 260, y: -375.8695}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 520, y: 100.939}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6368449394241896110
@@ -273,8 +273,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press Trigger on your right controller and aim on the Object you want to
-    interact with and release the button the interact.
+  m_text: Press Grip while close to an object you want to interact with to pick it
+    up and move it acound with you.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -359,7 +359,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2187870194540568242
 RectTransform:
   m_ObjectHideFlags: 0
@@ -425,7 +425,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5289897882393022525
 RectTransform:
   m_ObjectHideFlags: 0
@@ -508,9 +508,9 @@ RectTransform:
   m_Father: {fileID: 5289897882393022525}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 260, y: -442.339}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 520, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5403087554711839281
@@ -643,9 +643,9 @@ RectTransform:
   m_Father: {fileID: 2187870194540568242}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 247.93594, y: -383.0315}
   m_SizeDelta: {x: 495.8719, y: 100.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5526566188680047315
@@ -779,9 +779,9 @@ RectTransform:
   m_Father: {fileID: 5289897882393022525}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 260, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 513, y: 442}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &8885090793431991352
@@ -812,7 +812,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 77728a9375274a141807fcd909610812, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e4f0786b92cfb1e45ab3efdc0eb3b6c7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -855,9 +855,9 @@ RectTransform:
   m_Father: {fileID: 2187870194540568242}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 256.5, y: 0}
   m_SizeDelta: {x: 513, y: 442}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &219057985468247412
@@ -888,7 +888,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 58a599e5e8840c447b30ceb0c3612f3d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cfaf2f1e143e46549a74be85cecf6674, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -931,9 +931,9 @@ RectTransform:
   m_Father: {fileID: 2187870194540568242}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 260, y: -459.74075}
   m_SizeDelta: {x: 520, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &176887631889990014
