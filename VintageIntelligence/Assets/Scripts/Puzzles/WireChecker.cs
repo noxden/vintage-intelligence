@@ -26,7 +26,8 @@ public class WireChecker : MonoBehaviour
 
     private bool AllRightRotation()
     {
-        return wireRotation.All(rotation => rotation.rightRotation != false);
+        return true;
+       // return wireRotation.All(rotation => rotation.rightRotation != false);
     }
 
     private void SetWireVisibility()
