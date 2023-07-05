@@ -4,6 +4,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
+using System.Linq;
 
 public enum PlayerType { CavePlayer, HMDPlayer }
 
@@ -17,6 +18,8 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
 
     public int HandlesPlaced = 0;
     public GameObject[] GhostHandlesForCP;
+    [SerializeField] private GameObject[] _WiresToRotate;
+    [SerializeField] private Material _WireFinishedMat;
 
     public int BigClockHandlesCorrect = 0;
     public int Clock1HandlesCorrect = 0;
@@ -34,10 +37,11 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
 
     [SerializeField] private GameObject _BrickToPush;
     [SerializeField] private Transform _ForcePushPoint;
+    [SerializeField] private int ForeToPushBrickWith = 20;
 
     public void BrickPushedReleasedThis()
     {
-        _BrickToPush.GetComponent<Rigidbody>().AddForceAtPosition(new Vector3 (0,0,20), _ForcePushPoint.position, ForceMode.Impulse);
+        _BrickToPush.GetComponent<Rigidbody>().AddForceAtPosition(new Vector3 (0, 0, ForeToPushBrickWith), _ForcePushPoint.position, ForceMode.Impulse);
     }
 
     public void AddHandleCollected()
@@ -153,17 +157,23 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
 
     #endregion
 
-    [SerializeField] private int _WiresInSceneAmount;
     private int _wiresCorrect = 0;
 
     public void SetWirePlaced(bool state)
     {
+
         // if wire correct we add one, else we remove one
         _wiresCorrect += state ? 1 : -1;
+        Debug.Log("wires amount right" + _wiresCorrect);
 
-        if(_wiresCorrect == _WiresInSceneAmount)
+        if (_wiresCorrect == _WiresToRotate.Length)
         {
             OnWiresConnected.Invoke();
+            foreach(var wire in _WiresToRotate)
+            {
+                wire.GetComponent<Renderer>().material = _WireFinishedMat;
+                wire.GetComponent<Collider>().enabled = false;
+            }
         }
     }
 
