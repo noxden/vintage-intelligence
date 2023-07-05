@@ -28,6 +28,7 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
     public UnityEvent AllHandlesCollected;
     public UnityEvent SeedPlanted;
     public UnityEvent OnSeedWatered;
+    public UnityEvent OnWiresConnected;
 
     #region Clocks Puzzle
 
@@ -152,8 +153,21 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
 
     #endregion
 
-    // Notifies the network player(cave player) when a puzzle is done so the visual effects also take place for them
+    [SerializeField] private int _WiresInSceneAmount;
+    private int _wiresCorrect = 0;
 
+    public void SetWirePlaced(bool state)
+    {
+        // if wire correct we add one, else we remove one
+        _wiresCorrect += state ? 1 : -1;
+
+        if(_wiresCorrect == _WiresInSceneAmount)
+        {
+            OnWiresConnected.Invoke();
+        }
+    }
+
+    // Notifies the network player(cave player) when a puzzle is done so the visual effects also take place for them
     [PunRPC]
     private void AllHandlesDone()
     {
@@ -180,4 +194,9 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
         OnSeedWatered?.Invoke();
     }
 
+    [PunRPC]
+    private void AllWiresConnected()
+    {
+        OnWiresConnected?.Invoke();
+    }
 }

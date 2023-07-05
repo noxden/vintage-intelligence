@@ -24,9 +24,15 @@ public class CavePlayerManager : MonoBehaviourPunCallbacks
 
     [SerializeField] private List<GameObject> PosessableObjects = new();
 
+    private GameObject _lastPossessed;
+
     // Transfers the position of the cave player over the network
-    public void SetPossessingObjectForOthers(int objectIndex)
+    public void SetPossessingObjectForOthers(int objectIndex, GameObject possessingObject)
     {
+        _lastPossessed?.SetActive(true);
+        possessingObject.SetActive(false);
+        _lastPossessed = possessingObject;
+
         photonView.RPC("SetPossessingObject", RpcTarget.Others, objectIndex);
     }
 

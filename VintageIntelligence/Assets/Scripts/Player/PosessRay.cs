@@ -105,7 +105,7 @@ public class PosessRay : MonoBehaviour
 
                     PosessableHighlight posessableHighlight = _lastSelected.GetComponent<PosessableHighlight>();
                     posessableHighlight.SelectObject(false);  // revert back from the hover visuals
-                    CavePlayerManager.Instance.SetPossessingObjectForOthers(posessableHighlight.IndexOfObject); // Send the status to other players
+                    //CavePlayerManager.Instance.SetPossessingObjectForOthers(posessableHighlight.IndexOfObject); // Send the status to other players
 
                     _lastSelected.SetActive(false); // and deactivate the object we are currently posessing
                 }

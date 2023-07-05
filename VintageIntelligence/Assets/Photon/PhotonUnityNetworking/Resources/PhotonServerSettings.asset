@@ -45,6 +45,7 @@ MonoBehaviour:
   - AllClocksDoneNetwork
   - SeedPlantedNetwork
   - SeedWateredNetwork
+  - AllWiresConnected
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

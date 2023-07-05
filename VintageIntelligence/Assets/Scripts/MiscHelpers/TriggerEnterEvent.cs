@@ -1,5 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+// Created by Krista Plagemann //
+// Checks a trigger enter for a tag or object and fires an event for it. //
+
+
 using UnityEngine;
 using UnityEngine.Events;
 
