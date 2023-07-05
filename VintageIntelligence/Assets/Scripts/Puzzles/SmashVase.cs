@@ -1,5 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+// Created by Krista Plagemann//
+// Handles a smashable vase by calculating velocity (distance traveled over time)
+
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -46,7 +47,7 @@ public class SmashVase : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        Debug.Log($"Distance traveled: {Vector3.Distance(transform.position, hitpos)} bigger than {_MinDistance}, Time passed: {distanceTraveledUntilCrash} smaller than {_MaxTimeTraveled}");
+        //Debug.Log($"Distance traveled: {Vector3.Distance(transform.position, hitpos)} bigger than {_MinDistance}, Time passed: {distanceTraveledUntilCrash} smaller than {_MaxTimeTraveled}");
         if (Vector3.Distance(transform.position, hitpos) >= _MinDistance)
         {
             if (distanceTraveledUntilCrash <= _MaxTimeTraveled && distanceTraveledUntilCrash > 0)
