@@ -12,7 +12,7 @@ public class CloseUIElements : MonoBehaviour
     private bool isHidden1;
     private bool isHidden2;
 
-    private InputDevice _leftHand;
+    private InputDevice _rightHand;
     [SerializeField] private InputDeviceCharacteristics controllerToUse;
     [SerializeField] private float TriggerStartThreshold = 0.6f;
     [SerializeField] private float triggerDelay = 1.0f;
@@ -29,15 +29,20 @@ public class CloseUIElements : MonoBehaviour
         var devices = new List<InputDevice>();
         InputDevices.GetDevicesWithCharacteristics(controllerToUse, devices);
         if (devices.Count > 0)
-            _leftHand = devices[0];
+            _rightHand = devices[0];
         
-        Debug.Log("Controller for UI Stuff: "+_leftHand.name + _leftHand.characteristics);
+        Debug.Log("Controller for UI Stuff: "+_rightHand.name + _rightHand.characteristics);
     }
 
     private void Update()
     {
-        Debug.Log(_leftHand.TryGetFeatureValue(CommonUsages.trigger, out float data));
-        if (_leftHand.TryGetFeatureValue(CommonUsages.trigger, out var rTriggerPressed))
+        if (!_rightHand.isValid)
+        {
+            TryInitializeController();
+        }
+
+        Debug.Log(_rightHand.TryGetFeatureValue(CommonUsages.trigger, out float data));
+        if (_rightHand.TryGetFeatureValue(CommonUsages.trigger, out var rTriggerPressed))
         {
             if (rTriggerPressed >= TriggerStartThreshold)
             {
