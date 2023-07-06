@@ -1,3 +1,5 @@
+// Functionality moved to PuzzleHandler
+
 using System.Linq;
 using UnityEngine;
 

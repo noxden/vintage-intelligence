@@ -8,8 +8,6 @@ public class SetClock : MonoBehaviour
     [SerializeField] private int ClockIndex = 0;
     [SerializeField] private GameObject HandleObject;
 
-    [SerializeField] private bool HandleCorrect = false;
-
     [SerializeField] private bool ClockVisualHandler = false;
     [SerializeField] private Renderer ClockVisuals;
 

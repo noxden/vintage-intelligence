@@ -1,21 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Collections;
+// Created by Max von Trümbach, edited by Krista Plagemann //
+// Manages rotation of the wire components and marking itself done when correctly rotated.
+
 using UnityEngine;
 
 public class WireRotation : MonoBehaviour
 {
     //public bool rightRotation = false;
-
     //public int desiredTurns;
-
 
     [SerializeField, TextArea(0, 4)]
     public string RotationValues = "0 = Upwards, 1 = Right, 2 = Downwards, 3 = Left";
 
-
     [SerializeField] private int _CurrentRotation = 0;
     [SerializeField] private int _DesiredRotation = 0;
+
+    // In case it is a mirrored piece and it can have 2 rotations
+    [SerializeField] private bool _TwoRotationsPossible = false;
+    [SerializeField] private int _AlternativeDesired = 0;
 
     private bool _connectedRight = false;
 
@@ -27,7 +28,7 @@ public class WireRotation : MonoBehaviour
     {
         if (direction == -1)
         {
-            transform.Rotate(0,-90, 0);
+            transform.Rotate(0, 90, 0);
             // Save the rotation as left if we are upwards
             if(_CurrentRotation == 0)
                 _CurrentRotation = 3;
@@ -36,7 +37,7 @@ public class WireRotation : MonoBehaviour
         }
         else if (direction == 1)
         {
-            transform.Rotate(0, 90, 0);
+            transform.Rotate(0, -90, 0);
 
             // Save the rotation as upwards if we are left
             if (_CurrentRotation == 3)
@@ -47,6 +48,11 @@ public class WireRotation : MonoBehaviour
 
         // If the wire is rotated right
         if (_CurrentRotation == _DesiredRotation)
+        {
+            _connectedRight = true;
+            PuzzleHandler.Instance.SetWirePlaced(true);
+        }
+        else if(_TwoRotationsPossible && _CurrentRotation == _AlternativeDesired)
         {
             _connectedRight = true;
             PuzzleHandler.Instance.SetWirePlaced(true);

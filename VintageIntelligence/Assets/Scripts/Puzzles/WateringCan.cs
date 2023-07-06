@@ -12,7 +12,6 @@ public class WateringCan : MonoBehaviour
     [SerializeField] private GameObject _PouringWater;  // object that shows the pouring water
     [SerializeField] private Transform _Nozzle;     // nozzle where the water pours out for forward transform calculation
     [SerializeField] private Transform _TransformReference;     // An empty transform that we can make follow then nozzle for horizontal reference
-    [SerializeField] private GameObject _PlantPot;  
 
     private bool _waterFull = false; // if we filled the can with water
     private bool _checkTilt = false;    // if we should check (only while holding)
