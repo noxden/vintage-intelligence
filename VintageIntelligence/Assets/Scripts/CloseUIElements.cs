@@ -1,27 +1,26 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 
 public class CloseUIElements : MonoBehaviour
 {
-    public GameObject objectToHide1;
-    public GameObject objectToHide2;
-    public GameObject objectToHide3;
+    [SerializeField] private CP_Raycast _CavePlayerRaycast;
 
-    private bool isHidden1;
-    private bool isHidden2;
+    [SerializeField] private GameObject objectToHide1;
+    [SerializeField] private GameObject objectToHide2;
 
     private InputDevice _rightHand;
     [SerializeField] private InputDeviceCharacteristics controllerToUse;
     [SerializeField] private float TriggerStartThreshold = 0.6f;
+    [SerializeField] private float GripStartThreshold = 0.6f;
     [SerializeField] private float triggerDelay = 1.0f;
 
-    private float triggerTimer;
-
-    private void Start()
+    private async void Start()
     {
         TryInitializeController();
+        await WaitForGripButton();
     }
 
     private void TryInitializeController()
@@ -34,42 +33,65 @@ public class CloseUIElements : MonoBehaviour
         Debug.Log("Controller for UI Stuff: "+_rightHand.name + _rightHand.characteristics);
     }
 
-    private void Update()
+    private bool _triggerPressed = false;
+    private bool _gripPressed = false;
+
+    private async Task WaitForGripButton()
     {
-        if (!_rightHand.isValid)
+        while (!_gripPressed)
         {
-            TryInitializeController();
-        }
-
-        Debug.Log(_rightHand.TryGetFeatureValue(CommonUsages.trigger, out float data));
-        if (_rightHand.TryGetFeatureValue(CommonUsages.trigger, out var rTriggerPressed))
-        {
-            if (rTriggerPressed >= TriggerStartThreshold)
+            if (!_rightHand.isValid)
             {
-                // Toggle the visibility of the first object
-                isHidden1 = !isHidden1;
-                objectToHide1.SetActive(!isHidden1);
-                objectToHide2.SetActive(isHidden1);
-
-                // Reset the timer
-                triggerTimer = 0.0f;
+                TryInitializeController();
             }
-            else if (isHidden1 && triggerTimer >= triggerDelay)
+
+            if (_rightHand.TryGetFeatureValue(CommonUsages.grip, out var rGripPressed))
             {
-                // Toggle the visibility of the second object
-                isHidden2 = !isHidden2;
-                objectToHide2.SetActive(!isHidden2);
-            }
-        }
+                if (rGripPressed >= GripStartThreshold)
+                {
 
-        if (isHidden1 && isHidden2)
-        {
-            objectToHide3.SetActive(false);
-            Destroy(this.GetComponent<CloseUIElements>());
+                    // Toggle the visibility of the first object
+                    objectToHide1.SetActive(false);
+                    objectToHide2.SetActive(true);
+                    _gripPressed = true;
+                    await WaitForTriggerButton();
+                }
+            }
+            await Task.Yield();
         }
-            
-        
-        // Update the trigger timer
-        triggerTimer += Time.deltaTime;
+    }
+
+    private async Task WaitForTriggerButton()
+    {
+        while (!_triggerPressed)
+        {
+            if (!_rightHand.isValid)
+            {
+                TryInitializeController();
+            }
+
+            if (_rightHand.TryGetFeatureValue(CommonUsages.trigger, out var rTriggerPressed))
+            {
+                if (rTriggerPressed >= GripStartThreshold)
+                {
+
+                    // Toggle the visibility of the first object
+                    _triggerPressed = true;
+                }
+            }
+            await Task.Yield();
+        }
+        if(_triggerPressed)
+        {
+            Invoke("EnableNormalInteractions", 1f);
+            objectToHide2.SetActive(false);
+        }
+    }
+
+    private void EnableNormalInteractions()
+    {
+        if (PuzzleHandler.Instance._ThisPlayer == PlayerType.CavePlayer) // enable normal interactions for cave player
+            _CavePlayerRaycast.enabled = true;
+        gameObject.SetActive(false);
     }
 }
