@@ -23,6 +23,7 @@ public class CavePlayerManager : MonoBehaviourPunCallbacks
     #endregion
 
     [SerializeField] private List<GameObject> PosessableObjects = new();
+    [SerializeField] private List<GameObject> PossessedObjects = new();
 
     private GameObject _lastPossessed;
 
@@ -40,10 +41,17 @@ public class CavePlayerManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void SetPossessingObject(int objectIndex)
     {
+        // Possessable Objects raw (newest off, rest on)
         foreach(GameObject obj in PosessableObjects) 
-            obj.SetActive(false);
+            obj.SetActive(true);
         
-        PosessableObjects[objectIndex]?.SetActive(true);
+        PosessableObjects[objectIndex]?.SetActive(false);
+
+        // Possessed Objects cave player indicator (newest on, rest off)
+        foreach (GameObject obj in PossessedObjects) 
+            obj.SetActive(false);
+
+        PossessedObjects[objectIndex]?.SetActive(true);
     }
 
 }
