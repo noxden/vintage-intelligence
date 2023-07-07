@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Painting 5
+  m_Name: Painting 8
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -41,12 +41,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 0.97, y: 3.03}
-        m_Offset: {x: 0.21, y: 0}
+        m_Scale: {x: 2.96, y: 2.99}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 19134293778f93846b4e7a243b8ca20b, type: 3}
-        m_Scale: {x: 0.97, y: 3.03}
-        m_Offset: {x: 0.21, y: 0}
+        m_Texture: {fileID: 2800000, guid: 2bb2bf11a2c634d42b70e7545fc5d504, type: 3}
+        m_Scale: {x: 2.96, y: 2.99}
+        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}

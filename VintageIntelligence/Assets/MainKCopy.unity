@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.014902636, g: 0.013058962, b: 0.012235033, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -40197,6 +40197,7 @@ MonoBehaviour:
   PosessableObjects:
   - {fileID: 0}
   - {fileID: 0}
+  PossessedObjects: []
 --- !u!4 &1950502494
 Transform:
   m_ObjectHideFlags: 0
