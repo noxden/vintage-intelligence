@@ -53,6 +53,9 @@ Shader "Skybox/ThreeColorGradient" {
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.texcoord = v.texcoord;
+
+
+				
 				return o;
 			}
 

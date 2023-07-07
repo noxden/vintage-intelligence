@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Water
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Name: HoverCar
+  m_Shader: {fileID: 4800000, guid: 4340a3cf1cde6416d957808a6ac79eed, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
@@ -16,12 +16,11 @@ Material:
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
-  stringTagMap:
-    RenderType: Transparent
+  m_DoubleSidedGI: 1
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: _DepthGradientShallow
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -61,25 +60,35 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SurfaceDistortion:
-        m_Texture: {fileID: 2800000, guid: c3dbf00dbeb3b6041bc0478411905fed, type: 3}
+    - baseColorTexture:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SurfaceNoise:
-        m_Texture: {fileID: 2800000, guid: b902b1349fdecbf4dad096d1fa43eaac, type: 3}
+    - emissiveTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - normalTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - occlusionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - specularGlossinessTexture:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
+    - _CullMode: 0
     - _Cutoff: 0.5
-    - _DepthMaxDistance: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 10
-    - _FoamMaxDistance: 0.01
-    - _FoamMinDistance: 0.04
     - _GlossMapScale: 1
-    - _Glossiness: 1
+    - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 3
@@ -88,15 +97,26 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _SurfaceDistortionAmount: 0.372
-    - _SurfaceNoiseCutoff: 0.525
     - _UVSec: 0
     - _ZWrite: 0
+    - alphaCutoff: 0.5
+    - baseColorTexture_texCoord: 0
+    - emissiveTexture_texCoord: 0
+    - glossinessFactor: 1
+    - normalTexture_scale: 1
+    - normalTexture_texCoord: 0
+    - occlusionTexture_strength: 1
+    - occlusionTexture_texCoord: 0
+    - specularGlossinessTexture_texCoord: 0
     m_Colors:
-    - _Color: {r: 0.11095283, g: 0.4548151, b: 0.5188679, a: 0.4862745}
-    - _DepthGradientDeep: {r: 0.03227719, g: 0.07403957, b: 0.1509434, a: 0.749}
-    - _DepthGradientShallow: {r: 0.12827814, g: 0.27493685, b: 0.4433962, a: 0.725}
+    - _Color: {r: 0, g: 1, b: 0.76531124, a: 0.5176471}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FoamColor: {r: 0.17604123, g: 0.5648438, b: 0.6509434, a: 1}
-    - _SurfaceNoiseScroll: {r: 0.03, g: 0.03, b: 0, a: 0}
+    - baseColorFactor: {r: 0.22264738, g: 0.745283, b: 0.54982585, a: 1}
+    - baseColorTexture_Rotation: {r: 0, g: 0, b: 0, a: 0}
+    - emissiveFactor: {r: 0, g: 0, b: 0, a: 1}
+    - emissiveTexture_Rotation: {r: 0, g: 0, b: 0, a: 0}
+    - normalTexture_Rotation: {r: 0, g: 0, b: 0, a: 0}
+    - occlusionTexture_Rotation: {r: 0, g: 0, b: 0, a: 0}
+    - specularFactor: {r: 1, g: 1, b: 1, a: 1}
+    - specularGlossinessTexture_Rotation: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
