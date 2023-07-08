@@ -1,6 +1,8 @@
 // Created by Max von Trümbach, edited by Krista Plagemann //
 // Manages rotation of the wire components and marking itself done when correctly rotated.
 
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class WireRotation : MonoBehaviour
@@ -18,6 +20,9 @@ public class WireRotation : MonoBehaviour
     [SerializeField] private bool _TwoRotationsPossible = false;
     [SerializeField] private int _AlternativeDesired = 0;
 
+    [SerializeField] private MeshRenderer _MeshRenderer;
+    [SerializeField] private int _PositionOfBaseMat = 2;
+
     private bool _connectedRight = false;
 
     /// <summary>
@@ -28,7 +33,7 @@ public class WireRotation : MonoBehaviour
     {
         if (direction == -1)
         {
-            transform.Rotate(0, 90, 0);
+            transform.Rotate(0, -90, 0);
             // Save the rotation as left if we are upwards
             if(_CurrentRotation == 0)
                 _CurrentRotation = 3;
@@ -37,7 +42,7 @@ public class WireRotation : MonoBehaviour
         }
         else if (direction == 1)
         {
-            transform.Rotate(0, -90, 0);
+            transform.Rotate(0, 90, 0);
 
             // Save the rotation as upwards if we are left
             if (_CurrentRotation == 3)
@@ -62,5 +67,16 @@ public class WireRotation : MonoBehaviour
             PuzzleHandler.Instance.SetWirePlaced(false);
             _connectedRight = false;
         }
+    }
+
+    public void FinishWire(Material finishMat)
+    {
+        List<Material> materials = new();
+        foreach (var mat in _MeshRenderer.materials)
+            materials.Add(mat);
+
+        materials[_PositionOfBaseMat] = finishMat;
+        _MeshRenderer.SetMaterials(materials);
+        GetComponent<Collider>().enabled = false;
     }
 }

@@ -164,15 +164,14 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
 
         // if wire correct we add one, else we remove one
         _wiresCorrect += state ? 1 : -1;
-        Debug.Log("wires amount right" + _wiresCorrect);
+        //Debug.Log("wires amount right" + _wiresCorrect);
 
         if (_wiresCorrect == _WiresToRotate.Length)
         {
             OnWiresConnected.Invoke();
             foreach(var wire in _WiresToRotate)
             {
-                wire.GetComponent<Renderer>().material = _WireFinishedMat;
-                wire.GetComponent<Collider>().enabled = false;
+                wire.GetComponent<WireRotation>().FinishWire(_WireFinishedMat);
             }
         }
     }
