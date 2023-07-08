@@ -16,7 +16,7 @@ MonoBehaviour:
     AppIdRealtime: 3fd79998-c370-4358-aef0-37a99e1efb1e
     AppIdFusion: 
     AppIdChat: 
-    AppIdVoice: 9bbcff47-6fe0-4023-a3a4-0d11fa494311
+    AppIdVoice: 
     AppVersion: 
     UseNameServer: 1
     FixedRegion: 
@@ -28,24 +28,24 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: eu
+  DevRegion: 
   PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
   StartInOfflineMode: 0
   RpcList:
-  - ChangeColour
+  - AllClocksDoneNetwork
+  - AllHandlesDone
+  - AllWiresConnected
   - ClickRpc
   - DestroyRpc
-  - CantHearYou
-  - HeresWhy
+  - DestroySpaceship
+  - Fire
   - ReceiveString
-  - SetPossessingObject
-  - AllHandlesDone
-  - AllClocksDoneNetwork
+  - RespawnSpaceship
   - SeedPlantedNetwork
   - SeedWateredNetwork
-  - AllWiresConnected
+  - SetPossessingObject
   DisableAutoOpenWizard: 1
-  ShowSettings: 1
-  DevRegionSetOnce: 1
+  ShowSettings: 0
+  DevRegionSetOnce: 0

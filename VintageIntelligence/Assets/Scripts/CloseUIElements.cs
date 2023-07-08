@@ -30,7 +30,7 @@ public class CloseUIElements : MonoBehaviour
         if (devices.Count > 0)
             _rightHand = devices[0];
         
-        Debug.Log("Controller for UI Stuff: "+_rightHand.name + _rightHand.characteristics);
+        //Debug.Log("Controller for UI Stuff: "+_rightHand.name + _rightHand.characteristics);
     }
 
     private bool _triggerPressed = false;
