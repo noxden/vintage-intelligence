@@ -78,7 +78,7 @@ public class SpeechInputTrigger : MonoBehaviour
 
                 if (oneButtonActive && otherButtonActive)
                 {
-                    SpeechManager.StartSpeechRecording();
+                    //SpeechManager.Instance.StartSpeechRecording();
                     StartCoroutine(WaitForEndButton());
                     yield break;
                 }
@@ -90,7 +90,7 @@ public class SpeechInputTrigger : MonoBehaviour
 
                 if (oneButtonActive && otherButtonActive)
                 {
-                    SpeechManager.StartSpeechRecording();
+                    //SpeechManager.Instance.StartSpeechRecording();
                     StartCoroutine(WaitForEndButton());
                     yield break;
                 }
@@ -103,12 +103,12 @@ public class SpeechInputTrigger : MonoBehaviour
 
     private IEnumerator WaitForEndButton()
     {
+        OnStartedRecording?.Invoke();
         bool oneButtonActive = true;
         bool otherButtonActive = true;
         _secondsRecorded = 30f;
         while (oneButtonActive && otherButtonActive)
         {
-            OnStartedRecording?.Invoke();
             _secondsRecorded -= Time.deltaTime;
             OnSecondsIntoRecording?.Invoke(_secondsRecorded);
             _leftHand.TryGetFeatureValue(CommonUsages.triggerButton, out oneButtonActive);
@@ -119,6 +119,6 @@ public class SpeechInputTrigger : MonoBehaviour
 
         OnFinishedRecording?.Invoke();
         _waitForButtonRoutine = null;
-        SpeechManager.StopSpeechRecording();
+        //SpeechManager.Instance.StopSpeechRecording();
     }
 }

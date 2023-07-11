@@ -1,0 +1,373 @@
+// Author: Krista Plagemann //
+// Integrates Azure speech recognition and speech synthesis as well as ChatGPT.
+
+// 1. Use "StartSpeechRecording()" and "StopSpeechRecording()" to start and stop a voice recording.
+// 2. Subscribe to OnNewRecognizedText to receive the string output of the recognized speech.
+// 3. Use "StartReadMessage(string message)" to convert with ChatGPT and read out the ChatGPT result with Azure speech synthesis.
+
+// Additional notes:
+// - Set "_speechRecognitionLanguage" to whatever language you are speaking when recording.
+// - Use "SetChatGPTPrompt(string prompt)" to adjust the "_prompt" to change what ChatGPT outputs (or do it in this script directly).
+// - Subscribe to "OnNewSpokenText" to receive the ChatGPT result/the string that is being read out.
+// - In "GetStyledVoiceString(string message)" you can change the spoken language (e.g. <voice name='de-DE-ConradNeural'>)
+// and style of voice (e.g. < mstts:express -as style = ""cheerful"">).
+// - The keys are stored in a separate unpublished script called AIData. Set the AzureKey and AzureRegion as you would in your environment variables
+// and ChatGPTKey as you would in your auth.json file. Use a plain string with only the key or region in it.
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.CognitiveServices.Speech;
+using Microsoft.CognitiveServices.Speech.Audio;
+using OpenAI;
+using UnityEngine;
+
+public class SpeechManager : MonoBehaviour
+{
+    public static SpeechManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+        SpeechInputTrigger speechInput = FindObjectOfType<SpeechInputTrigger>();
+        speechInput?.OnStartedRecording.AddListener(StartSpeechRecording);
+        speechInput?.OnFinishedRecording.AddListener(StopSpeechRecording);
+    }
+
+    /////////////////// STT and TTS
+
+    private SpeechConfig _speechConfig;
+    private AudioConfig _audioConfig;
+    private SpeechRecognitionResult _speechRecognitionResult;
+    private string _speechRecognitionLanguage = "en-US"; // Changes the language azure is trying to recognize
+    private const int SampleRate = 24000;
+
+    public bool FinishedRecording = false;
+    public TaskCompletionSource<int> StopRecognition;
+
+    /// <summary>
+    /// When we recorded a new voice block and converted it to text. Outputs string of recorded text.
+    /// </summary>
+    public event Action<string> OnNewRecognizedText;
+
+    /// <summary>
+    /// When a message is converted by ChatGPT. Outputs the text that is being read out.
+    /// </summary>
+    public event Action<string> OnNewSpokenText;
+
+    /////////////////// ChatGPT
+
+    private OpenAIApi _openai = new OpenAIApi();
+
+    private string _returnText;
+    private List<ChatMessage> _messages = new List<ChatMessage>();
+    private string _prompt = "Can you please convert the following text into a Victorian dialect without adding any other response or reapeating this question? Since this is for a game script, even if the answer is very short, it is important that you will simply convert the text and not write anything else next to it! Do not answer the texts! Simply convert them! Start with this text: " +
+        " ";
+
+    #region RecordingSpeech
+
+    /// <summary>
+    /// Start recording what the player says from now on.
+    /// </summary>
+    public async void StartSpeechRecording()
+    {
+        Debug.Log("Started recording.");
+        FinishedRecording = false;
+        await RunSpeechRecording();
+    }
+
+    /// <summary>
+    /// Stop recording and let azure analyze what the player said.
+    /// </summary>
+    public void StopSpeechRecording()
+    {
+        FinishedRecording = true;
+        Debug.Log("Finished recording.");
+    }
+
+    public async Task RunSpeechRecording()
+    {
+        _speechConfig = SpeechConfig.FromSubscription(AIData.AzureKey, AIData.AzureRegion);
+        _speechConfig.SpeechRecognitionLanguage = _speechRecognitionLanguage;
+        _audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+
+        using var speechSynthesizer = new SpeechSynthesizer(_speechConfig, _audioConfig);
+        using var speechRecognizer = new SpeechRecognizer(_speechConfig, _audioConfig);
+        //StopRecognition = new TaskCompletionSource<int>();
+
+        #region Subscribing to SpeechRecognizingEvents
+
+        speechRecognizer.Recognized += SpeechRecognized;
+        speechRecognizer.Canceled += SpeechCanceled;
+        speechRecognizer.SessionStopped += SpeechedStopped;
+
+        #endregion
+
+
+        //////////// SPEECH TO TEXT //////////////
+
+        await speechRecognizer.StartContinuousRecognitionAsync(); // Starts recording what the player is saying
+
+        while (!FinishedRecording) { await Task.Yield(); }  // Waits until we declare the recording finished.
+
+        await speechRecognizer.StopContinuousRecognitionAsync();    // Stops recording
+
+        // Waits for completion of the stopping
+        //Task.WaitAny(new[] { StopRecognition.Task });
+
+        if (_speechRecognitionResult == null)    // just to make sure we have a result. If not, we cancel the whole thing to avoid errors
+            return;
+
+        OutputSpeechRecognitionResult(_speechRecognitionResult); // Validates the output and fires OnNewRecognizedText with the string received
+
+        //StartReadMessage(_speechRecognitionResult.Text);
+        // Finished with firing off the event OnNewRecognizedText. Subscribe to it and save the string somewhere to use it further.
+    }
+
+    #endregion
+
+    #region Converting in ChatGPT and reading it out
+
+    private string _messageToRead = "";
+
+    /// <summary>
+    /// Call this to start converting the message given in ChatGPt and reading it out for this user.
+    /// </summary>
+    /// <param name="message">Message that will be sent to ChatGPT along with a prompt defined in the script.</param>   
+    public async void StartReadMessage(string message)
+    {
+        _messageToRead = message;
+        Debug.LogWarning("Reading it out now.");
+        await ReadMessageAsync();
+    }
+
+    /// <summary>
+    /// Sets the prompt for chatgpt. Make sure to write it in a way that removes any unnecessary filler explanations by chatGPT.
+    /// </summary>
+    /// <param name="prompt">The prompt will have the recognized text attach at the end.</param>
+    public void SetChatGPTPrompt(string prompt) { _prompt = prompt; }
+
+    public async Task ReadMessageAsync()
+    {
+        _speechConfig = SpeechConfig.FromSubscription(AIData.AzureKey, AIData.AzureRegion);
+        _speechConfig.SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Raw24Khz16BitMonoPcm);
+
+        using var speechSynthesizer = new SpeechSynthesizer(_speechConfig, null);
+
+        if (_messageToRead.Length <= 0) // makes sure the recognizing before was successful and we have a text
+            return;
+
+        //////////// CHAT GPT //////////////
+        _openai = new OpenAIApi(AIData.ChatGPTKey);
+
+        // Sends the prompt and recognized text to ChatGPT and waits for a response
+        var completionResponse = await _openai.CreateChatCompletion(new CreateChatCompletionRequest()
+        {
+            Model = "gpt-3.5-turbo-0301",
+            Messages = GetChatGPTMessage(_messageToRead)
+        });
+
+        // Extracts the first choice of responses from the List we get back.
+        if (completionResponse.Choices != null && completionResponse.Choices.Count > 0)
+        {
+            var returnMessage = completionResponse.Choices[0].Message;
+            returnMessage.Content = returnMessage.Content.Trim();
+
+            _returnText = returnMessage.Content.ToString();
+            Debug.Log(_returnText);
+        }
+        else
+        {
+            Debug.LogWarning("No text was generated from this prompt.");
+            _returnText = "";
+        }
+
+        //////////// TEXT TO SPEECH //////////////
+        if (_returnText.Length != 0)    // only if the text contains something
+        {
+            OnNewSpokenText?.Invoke(_returnText);   // Fires off an event with the converted ChatGPT message
+            using (speechSynthesizer)
+            {
+                var startTime = DateTime.Now;
+
+                // Reads out the text we got from ChatGPT
+                //var speechSynthesisResult = await speechSynthesizer.SpeakSsmlAsync(GetStyledVoiceString(_returnText));
+                using (var result = await speechSynthesizer.SpeakSsmlAsync(GetStyledVoiceString(_returnText)))
+                {
+                    var audioDataStream = AudioDataStream.FromResult(result);
+                    var isFirstAudioChunk = true;
+                    var audioClip = AudioClip.Create(
+                        "Speech",
+                        SampleRate * 600, // Can speak 10mins audio as maximum
+                        1,
+                        SampleRate,
+                        true,
+                        (float[] audioChunk) =>
+                        {
+                            var chunkSize = audioChunk.Length;
+                            var audioChunkBytes = new byte[chunkSize * 2];
+                            var readBytes = audioDataStream.ReadData(audioChunkBytes);
+                            if (isFirstAudioChunk && readBytes > 0)
+                            {
+                                var endTime = DateTime.Now;
+                                var latency = endTime.Subtract(startTime).TotalMilliseconds;
+                                isFirstAudioChunk = false;
+                            }
+
+                            for (int i = 0; i < chunkSize; ++i)
+                            {
+                                if (i < readBytes / 2)
+                                {
+                                    audioChunk[i] = (short)(audioChunkBytes[i * 2 + 1] << 8 | audioChunkBytes[i * 2]) / 32768.0F;
+                                }
+                                else
+                                {
+                                    audioChunk[i] = 0.0f;
+                                }
+                            }
+
+                            if (readBytes == 0)
+                            {
+                                //Task.Delay(200).Wait();
+                                //Thread.Sleep(200); // Leave some time for the audioSource to finish playback
+                                //AudioSourceNeedStop = true;
+                            }
+                        });
+                    AudioSource.PlayClipAtPoint(audioClip, Vector3.zero);
+                    await speechSynthesizer.StopSpeakingAsync();
+                }
+                //OutputSpeechSynthesisResult(speechSynthesisResult, _returnText); // literally just Debug.Logs :D
+            }
+        }
+    }
+
+    #endregion
+
+    #region STT and TTS EventListeners and Output validators
+
+    // These are just reactions to what happens in the speech recognizing and speaking process. You can get rid of all the Debug.Logs if you don't want to clutter your console.
+    // Some of them contain important steps though, so make sure to only delete Debug.Logs :)
+    private void SpeechRecognized(object sender, SpeechRecognitionEventArgs eventArgs)
+    {
+        if (eventArgs.Result.Reason == ResultReason.RecognizedSpeech)
+        {
+            Debug.Log($"RECOGNIZED: Text={eventArgs.Result.Text}");
+        }
+        else if (eventArgs.Result.Reason == ResultReason.NoMatch)
+        {
+            Debug.Log($"NOMATCH: Speech could not be recognized.");
+        }
+
+        _speechRecognitionResult = eventArgs.Result;    // saves the recognition result
+
+    }
+    private void SpeechCanceled(object sender, SpeechRecognitionCanceledEventArgs eventArgs)
+    {
+        Debug.Log($"CANCELED: Reason={eventArgs.Reason}");
+
+        if (eventArgs.Reason == CancellationReason.Error)
+        {
+            Debug.Log($"CANCELED: ErrorCode={eventArgs.ErrorCode}");
+            Debug.Log($"CANCELED: ErrorDetails={eventArgs.ErrorDetails}");
+            Debug.Log($"CANCELED: Did you set the speech resource key and region values?");
+        }
+
+        StopRecognition.TrySetResult(0);    // Makes sure the stopping is registered and continues the Task that waits for this.
+    }
+    private void SpeechedStopped(object sender, SessionEventArgs eventArgs)
+    {
+        Debug.Log("\n    Session stopped event.");
+        StopRecognition.TrySetResult(0); // Makes sure the stopping is registered and continues the Task that waits for this.
+    }
+
+
+    private bool OutputSpeechRecognitionResult(SpeechRecognitionResult speechRecognitionResult)
+    {
+        switch (speechRecognitionResult.Reason)
+        {
+            case ResultReason.RecognizedSpeech:
+                {
+                    Debug.Log($"RECOGNIZED: Text={speechRecognitionResult.Text}");
+                    OnNewRecognizedText?.Invoke(speechRecognitionResult.Text);          // Fires off an event with the recorded text as string
+                }
+                return true;
+            case ResultReason.NoMatch:
+                Debug.Log($"NOMATCH: Speech could not be recognized.");
+                return false;
+            case ResultReason.Canceled:
+                var cancellation = CancellationDetails.FromResult(speechRecognitionResult);
+                Debug.Log($"CANCELED: Reason={cancellation.Reason}");
+
+                if (cancellation.Reason == CancellationReason.Error)
+                {
+                    Debug.Log($"CANCELED: ErrorCode={cancellation.ErrorCode}");
+                    Debug.Log($"CANCELED: ErrorDetails={cancellation.ErrorDetails}");
+                    Debug.Log($"CANCELED: Did you set the speech resource key and region values?");
+                }
+                return false;
+        }
+        return false;
+    }
+
+    private void OutputSpeechSynthesisResult(SpeechSynthesisResult speechSynthesisResult, string text)
+    {
+        switch (speechSynthesisResult.Reason)
+        {
+            case ResultReason.SynthesizingAudioCompleted:
+                Debug.Log($"Speech synthesized for text: [{text}]");
+                break;
+            case ResultReason.Canceled:
+                var cancellation = SpeechSynthesisCancellationDetails.FromResult(speechSynthesisResult);
+                Debug.Log($"CANCELED: Reason={cancellation.Reason}");
+
+                if (cancellation.Reason == CancellationReason.Error)
+                {
+                    Debug.Log($"CANCELED: ErrorCode={cancellation.ErrorCode}");
+                    Debug.Log($"CANCELED: ErrorDetails=[{cancellation.ErrorDetails}]");
+                    Debug.Log($"CANCELED: Did you set the speech resource key and region values?");
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    #endregion
+
+    #region ChatGPT
+
+    // Returns the format that ChatGPT wants lol
+    private List<ChatMessage> GetChatGPTMessage(string message)
+    {
+        var newMessage = new ChatMessage()
+        {
+            Role = "user",
+            Content = _prompt + message
+        };
+
+        _messages.Clear();
+        _messages.Add(newMessage);
+
+        return _messages;
+    }
+
+    #endregion
+
+    #region SpeechOutput
+
+
+    private string GetStyledVoiceString(string message)
+    {
+        var ssml = @$"<speak version='1.0' xml:lang='de-DE' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='http://www.w3.org/2001/mstts'>
+                        <voice name='de-DE-ConradNeural'>
+                            <mstts:express-as style=""cheerful"">
+                {message}
+                </mstts:express-as>
+            </voice>
+        </speak>";
+
+        return ssml;
+    }
+
+    #endregion
+}
