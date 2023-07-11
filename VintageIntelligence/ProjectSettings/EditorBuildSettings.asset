@@ -8,12 +8,15 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/P6MultiplayerSetup/DemoScene/MultiplayerDemo.unity
     guid: 80934758c9f0c8042952a712efd81b33
-  - enabled: 1
+  - enabled: 0
     path: Assets/Proto/MultiplayerSetup/TwoPlayerScene.unity
     guid: 202725d394f02324992cb95804215db4
   - enabled: 0
     path: Assets/Scenes/MultiCameraSetup.unity
     guid: 09ccdcc65fd7a8f4c98d3aafe90697d8
+  - enabled: 1
+    path: Assets/Scenes/MainScene.unity
+    guid: cc1ce4d11290b7e41bcd9d4a2a4d3f5e
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 713ce9e6219fd774c9e6e6a10b9b4cbf, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 7d3c8784ec9c7a94cb389ba6a520ee37, type: 2}
