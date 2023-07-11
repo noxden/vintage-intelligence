@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿// Script by Valem on Youtube
+
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;

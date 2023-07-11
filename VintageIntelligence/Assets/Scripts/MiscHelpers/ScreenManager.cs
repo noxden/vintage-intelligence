@@ -1,10 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
+// Created by Krista Plagemann and Max von Trümbach //
+// Turns on the displays in the built version once started. //
+
 using UnityEngine;
 
 public class ScreenManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    
     void Start()
     {
         for (int i = 1; i < Display.displays.Length; i++)
@@ -13,9 +14,4 @@ public class ScreenManager : MonoBehaviour
         }  
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

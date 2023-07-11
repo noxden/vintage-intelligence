@@ -1,6 +1,7 @@
-using System.Collections;
+// Created by Krista Plagemann //
+// Attempt to make a manager that oversees input, but it didn't quite work, so I abandoned it and do it in the scripts instead.
+
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR;
 

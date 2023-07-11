@@ -1,6 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+// Created by Krista Plagemann //
+// Displayed text from the Speechmanager on a UI as a debug feature. The debug feature never left the project though, so maybe its a feature haha //
+
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

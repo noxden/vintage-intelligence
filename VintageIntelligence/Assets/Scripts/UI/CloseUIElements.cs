@@ -1,8 +1,11 @@
+// Created by Max von Trümbach and Krista Plagemann
+// Handles closing the UI elements that contain a small controller tutorial.
+
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.XR;
-using UnityEngine.XR.Interaction.Toolkit;
+
 
 public class CloseUIElements : MonoBehaviour
 {
@@ -66,15 +69,13 @@ public class CloseUIElements : MonoBehaviour
         while (!_triggerPressed)
         {
             if (!_rightHand.isValid)
-            {
                 TryInitializeController();
-            }
+
 
             if (_rightHand.TryGetFeatureValue(CommonUsages.trigger, out var rTriggerPressed))
             {
                 if (rTriggerPressed >= GripStartThreshold)
                 {
-
                     // Toggle the visibility of the first object
                     _triggerPressed = true;
                 }

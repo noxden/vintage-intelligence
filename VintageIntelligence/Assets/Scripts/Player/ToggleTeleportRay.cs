@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
+// Created by Krista Plagemann //
+// Toggles the visuals of the teleport ray only when pressing the trigger.
+
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.XR;
+
 
 public class ToggleTeleportRay : MonoBehaviour
 {
