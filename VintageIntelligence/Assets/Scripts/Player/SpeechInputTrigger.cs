@@ -30,7 +30,7 @@ public class SpeechInputTrigger : MonoBehaviour
 
     private void Start()
     {
-        InputStatusManager.Instance.OnSpeechInputToggle += SetSpeechInputActive;
+        //InputStatusManager.Instance.OnSpeechInputToggle += SetSpeechInputActive;
         TryInitializeController();
     }
 
