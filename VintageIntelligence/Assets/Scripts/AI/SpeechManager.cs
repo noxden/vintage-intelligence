@@ -223,8 +223,11 @@ public static class SpeechManager
                                 //AudioSourceNeedStop = true;
                             }
                         });
+
                     AudioSource.PlayClipAtPoint(audioClip, Vector3.zero);
+                    
                     await speechSynthesizer.StopSpeakingAsync();
+                    
                 }
                 //OutputSpeechSynthesisResult(speechSynthesisResult, _returnText); // literally just Debug.Logs :D
             }
