@@ -78,7 +78,7 @@ public class SpeechInputTrigger : MonoBehaviour
 
                 if (oneButtonActive && otherButtonActive)
                 {
-                    //SpeechManager.Instance.StartSpeechRecording();
+                    SpeechManager.StartSpeechRecording();
                     StartCoroutine(WaitForEndButton());
                     yield break;
                 }
@@ -90,7 +90,7 @@ public class SpeechInputTrigger : MonoBehaviour
 
                 if (oneButtonActive && otherButtonActive)
                 {
-                    //SpeechManager.Instance.StartSpeechRecording();
+                    SpeechManager.StartSpeechRecording();
                     StartCoroutine(WaitForEndButton());
                     yield break;
                 }
@@ -119,6 +119,6 @@ public class SpeechInputTrigger : MonoBehaviour
 
         OnFinishedRecording?.Invoke();
         _waitForButtonRoutine = null;
-        //SpeechManager.Instance.StopSpeechRecording();
+        SpeechManager.StopSpeechRecording();
     }
 }

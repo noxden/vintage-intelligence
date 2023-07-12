@@ -20,8 +20,8 @@ public class SpeechDebugUI : MonoBehaviour
 
     void Start()
     {
-        SpeechManager.Instance.OnNewRecognizedText += NewRecognizedText;
-        SpeechManager.Instance.OnNewSpokenText += NewSpokenText;
+        SpeechManager.OnNewRecognizedText += NewRecognizedText;
+        SpeechManager.OnNewSpokenText += NewSpokenText;
         _SpeechInput.OnSecondsIntoRecording += ShowSecondsRecording;
         _SpeechInput.OnStartedRecording.AddListener(ShowRecordingUI);
         _SpeechInput.OnFinishedRecording.AddListener(HideRecordingUI);

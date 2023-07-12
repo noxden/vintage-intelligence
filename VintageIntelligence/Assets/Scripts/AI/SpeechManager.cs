@@ -22,46 +22,36 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using OpenAI;
 using UnityEngine;
 
-public class SpeechManager : MonoBehaviour
+public static class SpeechManager
 {
-    public static SpeechManager Instance { get; private set; }
-
-    private void Awake()
-    {
-        Instance = this;
-        SpeechInputTrigger speechInput = FindObjectOfType<SpeechInputTrigger>();
-        speechInput?.OnStartedRecording.AddListener(StartSpeechRecording);
-        speechInput?.OnFinishedRecording.AddListener(StopSpeechRecording);
-    }
-
     /////////////////// STT and TTS
 
-    private SpeechConfig _speechConfig;
-    private AudioConfig _audioConfig;
-    private SpeechRecognitionResult _speechRecognitionResult;
-    private string _speechRecognitionLanguage = "en-US"; // Changes the language azure is trying to recognize
-    private const int SampleRate = 24000;
+    private static SpeechConfig _speechConfig;
+    private static AudioConfig _audioConfig;
+    private static SpeechRecognitionResult _speechRecognitionResult;
+    private static string _speechRecognitionLanguage = "en-US"; // Changes the language azure is trying to recognize
+    private  const int SampleRate = 24000;
 
-    public bool FinishedRecording = false;
-    public TaskCompletionSource<int> StopRecognition;
+    public static bool FinishedRecording = false;
+    public static TaskCompletionSource<int> StopRecognition;
 
     /// <summary>
     /// When we recorded a new voice block and converted it to text. Outputs string of recorded text.
     /// </summary>
-    public event Action<string> OnNewRecognizedText;
+    public static event Action<string> OnNewRecognizedText;
 
     /// <summary>
     /// When a message is converted by ChatGPT. Outputs the text that is being read out.
     /// </summary>
-    public event Action<string> OnNewSpokenText;
+    public static event Action<string> OnNewSpokenText;
 
     /////////////////// ChatGPT
 
-    private OpenAIApi _openai = new OpenAIApi();
+    private static OpenAIApi _openai = new OpenAIApi();
 
-    private string _returnText;
-    private List<ChatMessage> _messages = new List<ChatMessage>();
-    private string _prompt = "Can you please convert the following text into a Victorian dialect without adding any other response or reapeating this question? Since this is for a game script, even if the answer is very short, it is important that you will simply convert the text and not write anything else next to it! Do not answer the texts! Simply convert them! Start with this text: " +
+    private static string _returnText;
+    private static List<ChatMessage> _messages = new List<ChatMessage>();
+    private static string _prompt = "Can you please convert the following text into a Victorian dialect without adding any other response or reapeating this question? Since this is for a game script, even if the answer is very short, it is important that you will simply convert the text and not write anything else next to it! Do not answer the texts! Simply convert them! Start with this text: " +
         " ";
 
     #region RecordingSpeech
@@ -69,7 +59,7 @@ public class SpeechManager : MonoBehaviour
     /// <summary>
     /// Start recording what the player says from now on.
     /// </summary>
-    public async void StartSpeechRecording()
+    public static async void StartSpeechRecording()
     {
         Debug.Log("Started recording.");
         FinishedRecording = false;
@@ -79,13 +69,13 @@ public class SpeechManager : MonoBehaviour
     /// <summary>
     /// Stop recording and let azure analyze what the player said.
     /// </summary>
-    public void StopSpeechRecording()
+    public static void StopSpeechRecording()
     {
         FinishedRecording = true;
         Debug.Log("Finished recording.");
     }
 
-    public async Task RunSpeechRecording()
+    public static async Task RunSpeechRecording()
     {
         _speechConfig = SpeechConfig.FromSubscription(AIData.AzureKey, AIData.AzureRegion);
         _speechConfig.SpeechRecognitionLanguage = _speechRecognitionLanguage;
@@ -128,13 +118,13 @@ public class SpeechManager : MonoBehaviour
 
     #region Converting in ChatGPT and reading it out
 
-    private string _messageToRead = "";
+    private static string _messageToRead = "";
 
     /// <summary>
     /// Call this to start converting the message given in ChatGPt and reading it out for this user.
     /// </summary>
     /// <param name="message">Message that will be sent to ChatGPT along with a prompt defined in the script.</param>   
-    public async void StartReadMessage(string message)
+    public static async void StartReadMessage(string message)
     {
         _messageToRead = message;
         Debug.LogWarning("Reading it out now.");
@@ -145,9 +135,9 @@ public class SpeechManager : MonoBehaviour
     /// Sets the prompt for chatgpt. Make sure to write it in a way that removes any unnecessary filler explanations by chatGPT.
     /// </summary>
     /// <param name="prompt">The prompt will have the recognized text attach at the end.</param>
-    public void SetChatGPTPrompt(string prompt) { _prompt = prompt; }
+    public static void SetChatGPTPrompt(string prompt) { _prompt = prompt; }
 
-    public async Task ReadMessageAsync()
+    public static async Task ReadMessageAsync()
     {
         _speechConfig = SpeechConfig.FromSubscription(AIData.AzureKey, AIData.AzureRegion);
         _speechConfig.SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Raw24Khz16BitMonoPcm);
@@ -247,7 +237,7 @@ public class SpeechManager : MonoBehaviour
 
     // These are just reactions to what happens in the speech recognizing and speaking process. You can get rid of all the Debug.Logs if you don't want to clutter your console.
     // Some of them contain important steps though, so make sure to only delete Debug.Logs :)
-    private void SpeechRecognized(object sender, SpeechRecognitionEventArgs eventArgs)
+    private static void SpeechRecognized(object sender, SpeechRecognitionEventArgs eventArgs)
     {
         if (eventArgs.Result.Reason == ResultReason.RecognizedSpeech)
         {
@@ -261,7 +251,7 @@ public class SpeechManager : MonoBehaviour
         _speechRecognitionResult = eventArgs.Result;    // saves the recognition result
 
     }
-    private void SpeechCanceled(object sender, SpeechRecognitionCanceledEventArgs eventArgs)
+    private static void SpeechCanceled(object sender, SpeechRecognitionCanceledEventArgs eventArgs)
     {
         Debug.Log($"CANCELED: Reason={eventArgs.Reason}");
 
@@ -274,14 +264,14 @@ public class SpeechManager : MonoBehaviour
 
         StopRecognition.TrySetResult(0);    // Makes sure the stopping is registered and continues the Task that waits for this.
     }
-    private void SpeechedStopped(object sender, SessionEventArgs eventArgs)
+    private static void SpeechedStopped(object sender, SessionEventArgs eventArgs)
     {
         Debug.Log("\n    Session stopped event.");
         StopRecognition.TrySetResult(0); // Makes sure the stopping is registered and continues the Task that waits for this.
     }
 
 
-    private bool OutputSpeechRecognitionResult(SpeechRecognitionResult speechRecognitionResult)
+    private static bool OutputSpeechRecognitionResult(SpeechRecognitionResult speechRecognitionResult)
     {
         switch (speechRecognitionResult.Reason)
         {
@@ -309,7 +299,7 @@ public class SpeechManager : MonoBehaviour
         return false;
     }
 
-    private void OutputSpeechSynthesisResult(SpeechSynthesisResult speechSynthesisResult, string text)
+    private static void OutputSpeechSynthesisResult(SpeechSynthesisResult speechSynthesisResult, string text)
     {
         switch (speechSynthesisResult.Reason)
         {
@@ -337,7 +327,7 @@ public class SpeechManager : MonoBehaviour
     #region ChatGPT
 
     // Returns the format that ChatGPT wants lol
-    private List<ChatMessage> GetChatGPTMessage(string message)
+    private static List<ChatMessage> GetChatGPTMessage(string message)
     {
         var newMessage = new ChatMessage()
         {
@@ -356,7 +346,7 @@ public class SpeechManager : MonoBehaviour
     #region SpeechOutput
 
 
-    private string GetStyledVoiceString(string message)
+    private static string GetStyledVoiceString(string message)
     {
         var ssml = @$"<speak version='1.0' xml:lang='de-DE' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='http://www.w3.org/2001/mstts'>
                         <voice name='de-DE-ConradNeural'>
