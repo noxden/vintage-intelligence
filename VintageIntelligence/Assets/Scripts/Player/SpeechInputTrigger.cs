@@ -54,7 +54,7 @@ public class SpeechInputTrigger : MonoBehaviour
             if (lTriggerPressed > 0.3)
                 _waitForButtonRoutine = StartCoroutine(WaitForSecondButton(InputType.trigger));
 
-            if (_waitForButtonRoutine != null)
+            if (_waitForButtonRoutine == null)
             {
                 // Left hand Grip
                 _leftHand.TryGetFeatureValue(CommonUsages.grip, out float lGripPressed);
