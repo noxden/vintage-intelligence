@@ -83,7 +83,7 @@ public static class SpeechManager
 
         using var speechSynthesizer = new SpeechSynthesizer(_speechConfig, _audioConfig);
         using var speechRecognizer = new SpeechRecognizer(_speechConfig, _audioConfig);
-        //StopRecognition = new TaskCompletionSource<int>();
+        StopRecognition = new TaskCompletionSource<int>();
 
         #region Subscribing to SpeechRecognizingEvents
 
@@ -103,7 +103,7 @@ public static class SpeechManager
         await speechRecognizer.StopContinuousRecognitionAsync();    // Stops recording
 
         // Waits for completion of the stopping
-        //Task.WaitAny(new[] { StopRecognition.Task });
+        Task.WaitAny(new[] { StopRecognition.Task });
 
         if (_speechRecognitionResult == null)    // just to make sure we have a result. If not, we cancel the whole thing to avoid errors
             return;
