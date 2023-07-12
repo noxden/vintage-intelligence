@@ -52,7 +52,10 @@ public class SpeechInputTrigger : MonoBehaviour
             // Left hand Trigger
             _leftHand.TryGetFeatureValue(CommonUsages.trigger, out float lTriggerPressed);
             if (lTriggerPressed > 0.3)
+            {
                 _waitForButtonRoutine = StartCoroutine(WaitForSecondButton(InputType.trigger));
+                return;
+            }
 
             if (_waitForButtonRoutine == null)
             {
@@ -121,6 +124,12 @@ public class SpeechInputTrigger : MonoBehaviour
 
         OnFinishedRecording?.Invoke();
         _waitForButtonRoutine = null;
+        SpeechManager.StopSpeechRecording();
+    }
+
+    // Stopping speechManager in case you do weird shit because async just keeps doing its stuff
+    private void OnDisable()
+    {
         SpeechManager.StopSpeechRecording();
     }
 }
