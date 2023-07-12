@@ -109,6 +109,7 @@ public class SpeechInputTrigger : MonoBehaviour
         _secondsRecorded = 30f;
         while (oneButtonActive && otherButtonActive)
         {
+            OnStartedRecording?.Invoke();
             _secondsRecorded -= Time.deltaTime;
             OnSecondsIntoRecording?.Invoke(_secondsRecorded);
             _leftHand.TryGetFeatureValue(CommonUsages.triggerButton, out oneButtonActive);

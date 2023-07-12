@@ -51,7 +51,7 @@ public static class SpeechManager
 
     private static string _returnText;
     private static List<ChatMessage> _messages = new List<ChatMessage>();
-    private static string _prompt = "Can you please convert the following text into a Victorian dialect without adding any other response or reapeating this question? Since this is for a game script, even if the answer is very short, it is important that you will simply convert the text and not write anything else next to it! Do not answer the texts! Simply convert them! Start with this text: " +
+    private static string _prompt = "Can you please convert the following text into a Victorian dialect without adding any other response or reapeating this question? Even if the answer is very short, it is important that you simply convert the text and not write anything else next to it! Start with this text: " +
         " ";
 
     #region RecordingSpeech
@@ -153,7 +153,7 @@ public static class SpeechManager
         // Sends the prompt and recognized text to ChatGPT and waits for a response
         var completionResponse = await _openai.CreateChatCompletion(new CreateChatCompletionRequest()
         {
-            Model = "gpt-3.5-turbo-0301",
+            Model = "gpt-3.5-turbo",
             Messages = GetChatGPTMessage(_messageToRead)
         });
 
