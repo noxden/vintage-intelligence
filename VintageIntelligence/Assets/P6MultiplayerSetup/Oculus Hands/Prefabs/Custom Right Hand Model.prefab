@@ -888,7 +888,7 @@ GameObject:
   - component: {fileID: 5686134208185136530}
   - component: {fileID: 5686134208192617028}
   - component: {fileID: 1170080748115788526}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Custom Right Hand Model
   m_TagString: RightHand
   m_Icon: {fileID: 0}
@@ -943,7 +943,7 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2147483647
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0

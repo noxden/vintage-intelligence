@@ -11,8 +11,10 @@ public enum CPInteractableType { Possessable, Wire, WireSelect}
 public class CP_Raycast : MonoBehaviour
 {
     [SerializeField] private LayerMask _InteractableLayers;
+    [SerializeField] private LayerMask _CollidableLayers;
     [SerializeField] private InputDeviceCharacteristics controllerToUse;
     [SerializeField] private GameObject PosessRayVisual;
+    [SerializeField] private Transform CollisionSphere;
 
     [SerializeField] private float TriggerStartThreshold = 0.6f;
     [SerializeField] private float TriggerReleaseThreshold = 0.1f;
@@ -23,7 +25,7 @@ public class CP_Raycast : MonoBehaviour
     private bool _rayActive = false;
     private bool _checkRay = true;
 
-
+     
     private async void Start()
     {
         CreateRayOrigin();
@@ -38,6 +40,7 @@ public class CP_Raycast : MonoBehaviour
 
         _checkRay = state;
     }
+    
 
     // Creates an origin point at the hand position. //
     private void CreateRayOrigin()
@@ -75,7 +78,8 @@ public class CP_Raycast : MonoBehaviour
             if (_rayOrigin == null)
                 return;
 
-            // Turns on or off ray visuals 
+
+            // Turns on or off ray visuals
             if (_rayActive)
                 PosessRayVisual.SetActive(true);
             else
@@ -166,9 +170,22 @@ public class CP_Raycast : MonoBehaviour
             if (rTriggerPressed > TriggerStartThreshold)
                 _rayActive = true;
 
+
+            //////// Casting a ray to check for general collision and activating a sphere where we hit smth //////
+
+            RaycastHit sphereHit;
+
+            if (Physics.Raycast(_rayOrigin.position, _rayOrigin.forward, out sphereHit, Mathf.Infinity, _CollidableLayers, QueryTriggerInteraction.Ignore))
+            {
+                CollisionSphere.position = sphereHit.point;
+                CollisionSphere.gameObject.SetActive(true);    // turns on the collision sphere always while hitting objects
+            }
+            else
+                CollisionSphere.gameObject.SetActive(false);    // turns off the collision sphere when not
+
+
             await Task.Yield();
         }
-
     }
 
     private void OnDisable()
