@@ -5,6 +5,7 @@
 using System;
 using UnityEngine;
 
+
 [CreateAssetMenu(fileName = "Pickupable", menuName = "VI/Pickupable", order = 0)]
 public class Pickupable : ScriptableObject
 {

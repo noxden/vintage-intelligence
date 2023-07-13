@@ -33,6 +33,12 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
     public UnityEvent OnSeedWatered;
     public UnityEvent OnWiresConnected;
 
+
+    private void Start()
+    {
+        Inventory.Instance.OnAnyPicked += AddCollected;
+    }
+
     #region Clocks Puzzle
 
     [SerializeField] private GameObject _BrickToPush;
@@ -157,6 +163,8 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
 
     #endregion
 
+    #region Wires
+
     private int _wiresCorrect = 0;
 
     public void SetWirePlaced(bool state)
@@ -172,9 +180,24 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
             foreach(var wire in _WiresToRotate)
             {
                 wire.GetComponent<WireRotation>().FinishWire(_WireFinishedMat);
+                photonView.RPC("AllWiresConnected", RpcTarget.Others);
             }
         }
     }
+
+    #endregion
+
+
+    #region Collectables
+
+
+    private void AddCollected(Pickupable pickupable, bool state)
+    {
+        if(state)
+            photonView.RPC("CollectedObject", RpcTarget.Others, pickupable.PickupableName);
+    }
+
+    #endregion
 
     // Notifies the network player(cave player) when a puzzle is done so the visual effects also take place for them
     [PunRPC]
@@ -208,4 +231,11 @@ public class PuzzleHandler : MonoBehaviourPunCallbacks
     {
         OnWiresConnected?.Invoke();
     }
+    
+    [PunRPC]
+    private void CollectedObject(string pickupable)
+    {
+        Inventory.Instance.CollectObjectByName(pickupable);
+    }
+
 }

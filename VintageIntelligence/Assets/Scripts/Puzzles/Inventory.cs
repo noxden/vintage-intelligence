@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Inventory : MonoBehaviour
@@ -64,6 +65,19 @@ public class Inventory : MonoBehaviour
         }
 
         OnAnyPicked(collectedObj, state);   // fires the event that any object was picked or discarded
+    }
+    
+    /// <summary>
+    /// Adds the collected pickupable to the inventory or removes it.
+    /// </summary>
+    /// <param name="collectedObj"></param>
+    public void CollectObjectByName(string collectedObj)
+    {
+        foreach (var obj in AllPickupables)  // goes through all objects and checks if the name matches
+        {
+            if (obj.PickupableName == collectedObj)
+                obj.PickThisUp();
+        }
     }
 
     /// <summary>

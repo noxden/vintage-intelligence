@@ -9,9 +9,6 @@ using UnityEngine;
 public class InventoryDisplay : MonoBehaviour
 {
     [SerializeField] private GameObject _DisplayWindow;
-
-    // Debug
-    [SerializeField] private TextMeshProUGUI _PickupablesCounter;
     private int _amountOwned = 0;
     //
 
@@ -27,14 +24,10 @@ public class InventoryDisplay : MonoBehaviour
 
     private void UpdateInventoryDisplay(Pickupable pickupable, bool state)
     {
-        // Debug Test
         if (state)
             _amountOwned++;
         else
             _amountOwned--;
-
-        _PickupablesCounter.SetText(_amountOwned.ToString());
-        //
 
         if (state)
         {
