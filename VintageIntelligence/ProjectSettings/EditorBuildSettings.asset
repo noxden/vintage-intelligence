@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Proto/MultiplayerSetup/TwoPlayerScene.unity
     guid: 202725d394f02324992cb95804215db4
   - enabled: 0
-    path: Assets/Scenes/MultiCameraSetup.unity
+    path: Assets/Scenes/Obsolete/MultiCameraSetup.unity
     guid: 09ccdcc65fd7a8f4c98d3aafe90697d8
   - enabled: 1
     path: Assets/Scenes/MainScene.unity
